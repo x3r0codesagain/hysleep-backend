@@ -1,7 +1,6 @@
-package com.app.octo.model;
+package com.app.octo.dto;
 
-import java.util.List;
-
+import com.app.octo.model.Booking;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,28 +14,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@Entity
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "Room")
-public class Room extends BaseModel{
+import java.util.List;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "room_id")
+@Data
+public class RoomDTO {
     private long roomId;
 
-    @Column(name = "room_number", nullable = false, unique = true)
     private String roomNumber;
 
-    @Column(name = "status", nullable = false)
     private String status;
 
-    @Column(name="room_description")
-    private String roomDescription;
-
-    @Column(name = "room_floor", nullable = false)
     private String floor;
 }

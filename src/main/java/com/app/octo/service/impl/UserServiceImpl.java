@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
 
 
     user.setPassword(passwordEncoder.encode(CharBuffer.wrap(registerRequest.getPassword()))); //Store in hashed
-
+    
     userRepository.save(user);
 
     UserResponse userResponse = mapper.map(user, UserResponse.class);

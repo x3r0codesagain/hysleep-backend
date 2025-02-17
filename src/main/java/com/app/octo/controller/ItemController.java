@@ -28,7 +28,7 @@ public class ItemController {
 
     try {
       Item item = Item.builder()
-          .sku(UUID.randomUUID().toString()).name("trial").build();
+              .sku(UUID.randomUUID().toString()).name("trial").build();
 
       itemRepository.save(item);
 
@@ -39,5 +39,4 @@ public class ItemController {
     }
     return null;
   }
-
 }
