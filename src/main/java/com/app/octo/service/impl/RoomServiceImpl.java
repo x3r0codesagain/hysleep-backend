@@ -1,0 +1,85 @@
+package com.app.octo.service.impl;
+
+import com.app.octo.dto.request.RoomRequestDTO;
+import com.app.octo.dto.request.RoomUpdateStatusRequestDTO;
+import com.app.octo.dto.response.RoomResponseDTO;
+import com.app.octo.model.Room;
+import com.app.octo.repository.RoomRepository;
+import com.app.octo.service.RoomService;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class RoomServiceImpl implements RoomService {
+
+    private final RoomRepository roomRepository;
+
+    public RoomServiceImpl(RoomRepository roomRepository) {
+        this.roomRepository = roomRepository;
+    }
+
+    @Override
+    public List<RoomResponseDTO> getAllRooms() {
+        List<Room> rooms = roomRepository.findAll();
+        return rooms.stream().map(this::mapToResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    public RoomResponseDTO getRoomById(long roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RuntimeException("Room not found with id: " + roomId));
+        return mapToResponse(room);
+    }
+
+    @Override
+    public RoomResponseDTO createRoom(RoomRequestDTO roomRequest) {
+        Room room = Room.builder()
+                .roomNumber(roomRequest.getRoomNumber())
+                .status("AVAILABLE")
+                .floor(roomRequest.getFloor())
+                .roomDescription(roomRequest.getRoomDescription())
+                .build();
+        Room savedRoom = roomRepository.save(room);
+        return mapToResponse(savedRoom);
+    }
+
+    @Override
+    public RoomResponseDTO updateStatus(long id, RoomUpdateStatusRequestDTO roomUpdateStatus) {
+        Room room = roomRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Room with ID " + id + " not found"));
+
+        room.setStatus(roomUpdateStatus.getStatus());
+        Room updatedRoom = roomRepository.save(room);
+        return new RoomResponseDTO(
+                updatedRoom.getRoomId(),
+                updatedRoom.getRoomNumber(),
+                updatedRoom.getStatus(),
+                updatedRoom.getFloor(),
+                updatedRoom.getRoomDescription()
+        );
+    }
+
+    @Override
+    public void deleteRoom(long roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RuntimeException("Room not found with id: " + roomId));
+        roomRepository.delete(room);
+    }
+
+    @Override
+    public boolean existsById(long roomId) {
+        return roomRepository.existsById(roomId);
+    }
+
+    private RoomResponseDTO mapToResponse(Room room) {
+        return new RoomResponseDTO(
+                room.getRoomId(),
+                room.getRoomNumber(),
+                room.getStatus(),
+                room.getFloor(),
+                room.getRoomDescription()
+        );
+    }
+}
