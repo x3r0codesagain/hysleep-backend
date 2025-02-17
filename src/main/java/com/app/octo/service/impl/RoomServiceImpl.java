@@ -39,6 +39,7 @@ public class RoomServiceImpl implements RoomService {
                 .roomNumber(roomRequest.getRoomNumber())
                 .status("AVAILABLE")
                 .floor(roomRequest.getFloor())
+                .roomDescription(roomRequest.getRoomDescription())
                 .build();
         Room savedRoom = roomRepository.save(room);
         return mapToResponse(savedRoom);
@@ -55,7 +56,8 @@ public class RoomServiceImpl implements RoomService {
                 updatedRoom.getRoomId(),
                 updatedRoom.getRoomNumber(),
                 updatedRoom.getStatus(),
-                updatedRoom.getFloor()
+                updatedRoom.getFloor(),
+                updatedRoom.getRoomDescription()
         );
     }
 
@@ -76,7 +78,8 @@ public class RoomServiceImpl implements RoomService {
                 room.getRoomId(),
                 room.getRoomNumber(),
                 room.getStatus(),
-                room.getFloor()
+                room.getFloor(),
+                room.getRoomDescription()
         );
     }
 }

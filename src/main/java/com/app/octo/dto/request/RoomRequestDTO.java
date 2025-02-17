@@ -10,4 +10,7 @@ public class RoomRequestDTO {
 
     @NotBlank(message = "Floor is required")
     private String floor;
+
+    @NotBlank(message = "Room Description is required")
+    private String roomDescription;
 }

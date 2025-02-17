@@ -12,4 +12,5 @@ public class RoomResponseDTO {
     private String roomNumber;
     private String status;
     private String floor;
+    private String roomDescription;
 }

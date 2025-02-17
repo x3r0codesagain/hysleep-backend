@@ -1,7 +1,5 @@
 package com.app.octo.model;
 
-import java.sql.Date;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,13 +13,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "Booking")
-public class Booking {
+public class Booking extends BaseModel {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
