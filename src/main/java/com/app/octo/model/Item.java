@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ITEM")
-public class Item {
+public class Item extends BaseModel{
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

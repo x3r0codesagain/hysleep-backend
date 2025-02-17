@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "Booking")
-public class Booking {
+public class Booking extends BaseModel {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
