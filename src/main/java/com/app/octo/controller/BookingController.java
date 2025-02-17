@@ -10,10 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/v1/room")
+@RequestMapping("api/v1/booking")
 public class BookingController {
 
   @Autowired
@@ -23,6 +24,25 @@ public class BookingController {
   public ResponseEntity<BookingResponse> bookRoom(@RequestBody BookingRequest bookingRequest) {
     try {
       BookingResponse response = bookingService.bookRoom(bookingRequest);
+
+      return new ResponseEntity<>(response, HttpStatus.OK);
+    } catch (AppException e) {
+      BookingResponse response = new BookingResponse();
+      response.setErrorCode(e.getCode().name());
+      response.setErrorMessage(e.getMessage());
+      return new ResponseEntity<>(response, e.getCode());
+    } catch (Exception e) {
+      BookingResponse response = new BookingResponse();
+      response.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.name());
+      response.setErrorMessage(e.getMessage());
+      return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @PostMapping("/public/cancel")
+  public ResponseEntity<BookingResponse> cancelBooking(@RequestParam Long id) {
+    try {
+      BookingResponse response = bookingService.cancelBooking(id);
 
       return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (AppException e) {

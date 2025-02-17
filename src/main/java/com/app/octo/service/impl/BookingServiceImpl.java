@@ -63,4 +63,32 @@ public class BookingServiceImpl implements BookingService {
     bookingRepository.save(booking);
     return mapper.map(booking, BookingResponse.class);
   }
+
+  @Override
+  public BookingResponse cancelBooking(Long id) {
+    Booking booking = bookingRepository.findByBookingId(id);
+
+    if (Objects.isNull(booking)) {
+      throw new AppException(ErrorCodes.DATA_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    booking.setStatus("CANCELLED");
+
+    Room room = roomRepository.findByRoomIdAndStatus(booking.getRoom().getRoomId(), "BOOKED");
+
+    if (Objects.isNull(room)) {
+      throw new AppException(ErrorCodes.DATA_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    room.setStatus("AVAILABLE");
+
+    booking.setRoom(room);
+
+    bookingRepository.save(booking);
+    roomRepository.save(room);
+
+    BookingResponse response = mapper.map(booking, BookingResponse.class);
+
+    return response;
+  }
 }
