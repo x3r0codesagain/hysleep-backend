@@ -1,6 +1,7 @@
 package com.app.octo.model;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -12,9 +13,9 @@ import lombok.Data;
 public class BaseModel {
     
     @CreatedDate
-    private Instant createdAt;
-    
+    private LocalDateTime createdAt;
+
     @LastModifiedDate
-    private Instant updatedAt;
+    private LocalDateTime updatedAt;
 
 }
