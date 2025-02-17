@@ -66,13 +66,26 @@ public class BookingServiceImpl implements BookingService {
 
   @Override
   public BookingResponse cancelBooking(Long id) {
+    BookingResponse response = processBookingCancelOrDone(id, "CANCELLED");
+
+    return response;
+  }
+
+  @Override
+  public BookingResponse doneBooking(Long id) {
+    BookingResponse response = processBookingCancelOrDone(id, "DONE");
+
+    return response;
+  }
+
+  private BookingResponse processBookingCancelOrDone(Long id, String status) {
     Booking booking = bookingRepository.findByBookingId(id);
 
     if (Objects.isNull(booking)) {
       throw new AppException(ErrorCodes.DATA_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    booking.setStatus("CANCELLED");
+    booking.setStatus(status);
 
     Room room = roomRepository.findByRoomIdAndStatus(booking.getRoom().getRoomId(), "BOOKED");
 
@@ -88,7 +101,6 @@ public class BookingServiceImpl implements BookingService {
     roomRepository.save(room);
 
     BookingResponse response = mapper.map(booking, BookingResponse.class);
-
     return response;
   }
 }

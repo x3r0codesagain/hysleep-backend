@@ -57,8 +57,14 @@ public class UserController {
 
       return new ResponseEntity<>(userResponse, HttpStatus.OK);
     } catch (AppException appException) {
-      return new ResponseEntity<>(null, appException.getCode());
+      UserResponse userResponse = new UserResponse();
+      userResponse.setErrorCode(appException.getCode().name());
+      userResponse.setErrorMessage(appException.getMessage());
+      return new ResponseEntity<>(userResponse, appException.getCode());
     } catch (Exception ex) {
+      UserResponse userResponse = new UserResponse();
+      userResponse.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.name());
+      userResponse.setErrorMessage("Internal Error");
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -72,8 +78,14 @@ public class UserController {
 
       return new ResponseEntity<>(userResponse, HttpStatus.OK);
     } catch (AppException appException) {
-      return new ResponseEntity<>(null, appException.getCode());
+      UserResponse userResponse = new UserResponse();
+      userResponse.setErrorCode(appException.getCode().name());
+      userResponse.setErrorMessage(appException.getMessage());
+      return new ResponseEntity<>(userResponse, appException.getCode());
     } catch (Exception ex) {
+      UserResponse userResponse = new UserResponse();
+      userResponse.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.name());
+      userResponse.setErrorMessage("Internal Error");
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
