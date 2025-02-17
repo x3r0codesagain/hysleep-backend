@@ -1,5 +1,6 @@
 package com.app.octo.model.response;
 
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 
