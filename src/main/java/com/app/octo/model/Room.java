@@ -37,6 +37,9 @@ public class Room extends BaseModel{
     @Column(name = "room_floor", nullable = false)
     private String floor;
 
+    @Column(name = "room_description")
+    private String roomDescription;
+
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Booking> bookings;
 }
