@@ -32,8 +32,8 @@ public class ItemController {
 
       itemRepository.save(item);
 
-      ItemResponse response = ItemResponse.builder().name(item.getName()).sku(item.getSku()).build();
-      return new ResponseEntity<>(response, HttpStatus.OK);
+      ItemResponse response = new ItemResponse(item.getSku(), item.getSku());
+      return ResponseEntity.ok(response);
     } catch (Exception e) {
       log.error(e.getMessage());
     }
