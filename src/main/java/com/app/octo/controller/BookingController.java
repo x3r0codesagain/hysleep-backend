@@ -3,7 +3,6 @@ package com.app.octo.controller;
 import com.app.octo.model.exception.AppException;
 import com.app.octo.model.request.BookingRequest;
 import com.app.octo.model.response.BookingResponse;
-import com.app.octo.model.response.ItemResponse;
 import com.app.octo.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("api/v1/room")
-public class RoomController {
+public class BookingController {
 
   @Autowired
   private BookingService bookingService;
