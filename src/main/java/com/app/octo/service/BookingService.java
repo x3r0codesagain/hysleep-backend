@@ -5,4 +5,6 @@ import com.app.octo.model.response.BookingResponse;
 
 public interface BookingService {
   BookingResponse bookRoom(BookingRequest request);
+
+  BookingResponse cancelBooking(Long id);
 }
