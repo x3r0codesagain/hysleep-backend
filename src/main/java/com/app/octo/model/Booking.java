@@ -41,4 +41,10 @@ public class Booking extends BaseModel {
 
     @Column(name = "status", nullable = false)
     private String status;
+
+    @Column(name="start_date", nullable = false)
+    private Date startDate;
+
+    @Column(name = "end_date", nullable = false)
+    private Date endDate;
 }

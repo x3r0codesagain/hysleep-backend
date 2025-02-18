@@ -14,4 +14,5 @@ import java.util.Date;
 public class BookingRequest {
   private Long roomId;
   private String userEmail;
+  private int duration;
 }
