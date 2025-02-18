@@ -58,11 +58,12 @@ public class CategoryServiceImpl implements CategoryService{
 
     public CategoryResponse updateCategoryName(CategoryUpdateRequest request){
         Category category = categoryRepository.findByCategoryId(request.getCategoryId());
-        // if (Objects.nonNull(category)) {
-        //     throw new AppException(ErrorCodes.CATEGORY_EXISTS.getMessage(), HttpStatus.NOT_FOUND);
-        // }
+        if (Objects.isNull(category)) {
+            throw new AppException(ErrorCodes.CATEGORY_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
+        }
 
-        if(category.getCategoryName().equals(request.getCategoryName())) {
+        Category existingCategory = categoryRepository.findByCategoryName(request.getCategoryName());
+        if (Objects.nonNull(existingCategory)) {
             throw new AppException(ErrorCodes.CATEGORY_EXISTS.getMessage(), HttpStatus.NOT_FOUND);
         }
 

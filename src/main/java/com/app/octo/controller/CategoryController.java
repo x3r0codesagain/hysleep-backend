@@ -12,11 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.app.octo.model.exception.AppException;
 import com.app.octo.dto.response.RoomResponseDTO;
 import com.app.octo.model.response.ApiResponse;
 import com.app.octo.model.response.CategoryGetResponse;
 import com.app.octo.model.response.CategoryResponse;
+import com.app.octo.model.exception.AppException;
+import com.app.octo.model.exception.AppException;
+import com.app.octo.model.exception.AppException;
+import com.app.octo.model.exception.AppException;
 import com.app.octo.model.request.CategoryRequest;
 import com.app.octo.model.request.CategoryUpdateRequest;
 import com.app.octo.service.CategoryService;
@@ -42,15 +46,25 @@ public class CategoryController {
         try {
             CategoryResponse newCategory = categoryService.createCategory(request.getCategoryName());
             return ResponseEntity.status(HttpStatus.CREATED).body(newCategory);
+        } catch (AppException e) {
+            CategoryResponse response = new CategoryResponse();
+            response.setErrorCode(e.getCode().name());
+            response.setErrorMessage(e.getMessage());
+            return new ResponseEntity<>(response, e.getCode());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error creating category: " + e.getMessage());
-        } 
+        }
     }
     @PostMapping("/public/update-name")
     public ResponseEntity<?> updateCategoryName(@RequestBody CategoryUpdateRequest request){
         try {
-            CategoryResponse newCategory = categoryService.updateCategoryName(request);
-            return ResponseEntity.ok(newCategory);
+            CategoryResponse updateCategory = categoryService.updateCategoryName(request);
+            return ResponseEntity.ok(updateCategory);
+        } catch (AppException e) {
+            CategoryResponse response = new CategoryResponse();
+            response.setErrorCode(e.getCode().name());
+            response.setErrorMessage(e.getMessage());
+            return new ResponseEntity<>(response, e.getCode());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error updating category: " + e.getMessage());
         } 
