@@ -57,4 +57,23 @@ public class BookingController {
       return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  @PostMapping("/public/done")
+  public ResponseEntity<BookingResponse> doneBooking(@RequestParam Long id) {
+    try {
+      BookingResponse response = bookingService.doneBooking(id);
+
+      return new ResponseEntity<>(response, HttpStatus.OK);
+    } catch (AppException e) {
+      BookingResponse response = new BookingResponse();
+      response.setErrorCode(e.getCode().name());
+      response.setErrorMessage(e.getMessage());
+      return new ResponseEntity<>(response, e.getCode());
+    } catch (Exception e) {
+      BookingResponse response = new BookingResponse();
+      response.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.name());
+      response.setErrorMessage(e.getMessage());
+      return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }

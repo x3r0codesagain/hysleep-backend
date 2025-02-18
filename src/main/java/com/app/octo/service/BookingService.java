@@ -7,4 +7,5 @@ public interface BookingService {
   BookingResponse bookRoom(BookingRequest request);
 
   BookingResponse cancelBooking(Long id);
+  BookingResponse doneBooking(Long id);
 }
