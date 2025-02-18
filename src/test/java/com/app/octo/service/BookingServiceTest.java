@@ -82,7 +82,7 @@ public class BookingServiceTest {
   private Booking cancelledBooking;
 
   @Test
-  public void bookRoom_success() {
+  void bookRoom_success() {
     when(roomRepository.findByRoomIdAndStatus(ID, AVAILABLE_STATUS)).thenReturn(room);
     when(userRepository.findByEmail(USER_HYSLEEP_COM)).thenReturn(Optional.of(user));
     when(roomRepository.save(bookedRoom)).thenReturn(bookedRoom);
@@ -102,7 +102,7 @@ public class BookingServiceTest {
   }
 
   @Test
-  public void bookRoomNotFound_throwException() {
+  void bookRoomNotFound_throwException() {
     when(roomRepository.findByRoomIdAndStatus(ID, AVAILABLE_STATUS)).thenReturn(null);
 
     try {
@@ -117,7 +117,7 @@ public class BookingServiceTest {
   }
 
   @Test
-  public void bookRoomUserNotFound_throwException() {
+  void bookRoomUserNotFound_throwException() {
     when(roomRepository.findByRoomIdAndStatus(ID, AVAILABLE_STATUS)).thenReturn(room);
     when(userRepository.findByEmail(USER_HYSLEEP_COM)).thenReturn(Optional.empty());
 
@@ -133,7 +133,7 @@ public class BookingServiceTest {
   }
 
   @Test
-  public void cancelBooking_success() {
+  void cancelBooking_success() {
     bookingResponse.setStatus("CANCELLED");
     when(bookingRepository.findByBookingId(ID)).thenReturn(booking);
     when(roomRepository.findByRoomIdAndStatus(ID, BOOKED_STATUS)).thenReturn(bookedRoom);
@@ -154,7 +154,7 @@ public class BookingServiceTest {
   }
 
   @Test
-  public void cancelBookingRoomNotFound_throwException() {
+  void cancelBookingRoomNotFound_throwException() {
     bookingResponse.setStatus("CANCELLED");
     when(bookingRepository.findByBookingId(ID)).thenReturn(booking);
     when(roomRepository.findByRoomIdAndStatus(ID, BOOKED_STATUS)).thenReturn(null);
@@ -171,7 +171,7 @@ public class BookingServiceTest {
   }
 
   @Test
-  public void cancelBookingBookingNotFound_throwException() {
+  void cancelBookingBookingNotFound_throwException() {
     bookingResponse.setStatus("CANCELLED");
     when(bookingRepository.findByBookingId(ID)).thenReturn(null);
 
@@ -186,7 +186,7 @@ public class BookingServiceTest {
   }
 
   @Test
-  public void doneBooking_success() {
+  void doneBooking_success() {
     bookingResponse.setStatus(DONE);
     cancelledBooking.setStatus(DONE);
     when(bookingRepository.findByBookingId(ID)).thenReturn(booking);
@@ -208,7 +208,7 @@ public class BookingServiceTest {
   }
 
   @Test
-  public void doneBookingRoomNotFound_throwException() {
+  void doneBookingRoomNotFound_throwException() {
     bookingResponse.setStatus(DONE);
     when(bookingRepository.findByBookingId(ID)).thenReturn(booking);
     when(roomRepository.findByRoomIdAndStatus(ID, BOOKED_STATUS)).thenReturn(null);
@@ -225,7 +225,7 @@ public class BookingServiceTest {
   }
 
   @Test
-  public void doneBookingBookingNotFound_throwException() {
+  void doneBookingBookingNotFound_throwException() {
     bookingResponse.setStatus(DONE);
     when(bookingRepository.findByBookingId(ID)).thenReturn(null);
 
@@ -240,7 +240,7 @@ public class BookingServiceTest {
   }
 
   @Test
-  public void changeStatusAfterTime_success() {
+  void changeStatusAfterTime_success() {
     Date newDate = DateUtils.addHours(new Date(), -4);
     booking.setBookingDate(newDate);
     booking.setEndDate(newDate);
