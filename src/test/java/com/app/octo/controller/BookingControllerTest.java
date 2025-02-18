@@ -26,7 +26,6 @@ import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.mockito.Mockito.*;
@@ -55,8 +54,8 @@ public class BookingControllerTest {
 
     public static final Date BOOKING_DATE = new Date();
     public static final String BOOKING_STATUS = "BOOKING_STATUS";
-    public static final Date START_DATE = new Date();;
-    public static final Date END_DATE = new Date();;
+    public static final Date START_DATE = new Date();
+    public static final Date END_DATE = new Date();
     public static final Long ID = 1L;
 
     public static final Integer DURATION = 1;
@@ -307,8 +306,8 @@ public class BookingControllerTest {
                 .status(BOOKING_STATUS)
                 .build();
 
-        ListResponse<BookingResponse> bookingChangeResponse = new ListResponse<>();
-        bookingChangeResponse.setVal(new ArrayList<>());
+        ListResponse<BookingResponse> responseList = new ListResponse<>();
+        responseList.setVal(new ArrayList<>());
 
         bookingRequest = BookingRequest.builder()
                 .roomId(ROOM_ID)
