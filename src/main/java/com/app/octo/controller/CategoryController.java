@@ -34,7 +34,7 @@ public class CategoryController {
         } catch (Exception e) {
             ApiResponse<List<CategoryGetResponse>> errorResponse = new ApiResponse<List<CategoryGetResponse>>();
             errorResponse.setErrorCode("INTERNAL_SERVER_ERROR");
-            errorResponse.setErrorMessage("Error fetching category: " + e.getMessage());
+            errorResponse.setErrorMessage("Error fetching categories: " + e.getMessage());
             return ResponseEntity.internalServerError().body(errorResponse);
 
         }
@@ -57,7 +57,7 @@ public class CategoryController {
         }
     }
     @PostMapping("/public/update-name")
-    public ResponseEntity<?> updateCategoryName(@RequestBody CategoryUpdateRequest request){
+    public ResponseEntity<CategoryResponse> updateCategoryName(@RequestBody CategoryUpdateRequest request){
         try {
             CategoryResponse updateCategory = categoryService.updateCategoryName(request);
             return ResponseEntity.ok(updateCategory);
@@ -67,12 +67,15 @@ public class CategoryController {
             response.setErrorMessage(e.getMessage());
             return new ResponseEntity<>(response, e.getCode());
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error updating category: " + e.getMessage());
+            CategoryResponse response = new CategoryResponse();
+            response.setErrorCode("INTERNAL_SERVER_ERROR");
+            response.setErrorMessage("Error updating category: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(response);
         } 
     }
 
     @PostMapping("/public/delete-category")
-    public ResponseEntity<?> deleteCategory(@RequestParam long categoryId){
+    public ResponseEntity<CategoryResponse> deleteCategory(@RequestParam long categoryId){
         try{
             categoryService.deleteCategory(categoryId);
             return ResponseEntity.noContent().build();
@@ -82,7 +85,10 @@ public class CategoryController {
             response.setErrorMessage(e.getMessage());
             return new ResponseEntity<>(response, e.getCode());
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error deleting category: " + e.getMessage());
+            CategoryResponse response = new CategoryResponse();
+            response.setErrorCode("INTERNAL_SERVER_ERROR");
+            response.setErrorMessage("Error deleting category: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(response);
         } 
 
     }
