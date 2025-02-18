@@ -62,7 +62,7 @@ public class UserServiceTest {
   private User existingUser;
 
   @Test
-  public void findUser_success() {
+  void findUser_success() {
     when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
     when(mapper.map(user, UserResponse.class)).thenReturn(userResponse);
 
@@ -78,7 +78,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findUserNoUserFound_throwAppException() {
+  void findUserNoUserFound_throwAppException() {
     when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
 
     try {
@@ -91,7 +91,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void loginUser_success() {
+  void loginUser_success() {
     when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
     when(passwordEncoder.matches(any(), any())).thenReturn(Boolean.TRUE);
     when(mapper.map(user, UserResponse.class)).thenReturn(userResponse);
@@ -109,7 +109,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void loginUserPasswordInvalid_throwAppException() {
+  void loginUserPasswordInvalid_throwAppException() {
     when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
     when(passwordEncoder.matches(any(), any())).thenReturn(Boolean.FALSE);
 
@@ -124,7 +124,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void loginUserUserNotFound_throwAppException() {
+  void loginUserUserNotFound_throwAppException() {
     when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
 
     try {
@@ -137,7 +137,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void registerUser_success() {
+  void registerUser_success() {
     when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
     when(mapper.map(user, UserResponse.class)).thenReturn(userResponse);
     when(mapper.map(registerRequest, User.class)).thenReturn(user);
@@ -159,7 +159,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void registerUserAlreadyRegistered_throwAppException() {
+  void registerUserAlreadyRegistered_throwAppException() {
     when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
 
     try {
@@ -173,7 +173,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void registerUserNoEmail_throwAppException() {
+  void registerUserNoEmail_throwAppException() {
     registerRequest.setEmail("");
 
     try {
@@ -186,7 +186,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void registerUserNoFirstNameAndLastName_throwAppException() {
+  void registerUserNoFirstNameAndLastName_throwAppException() {
     registerRequest.setFirstName("");
     registerRequest.setLastName("");
 
@@ -199,7 +199,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void registerAdmin_success() {
+  void registerAdmin_success() {
     user.setUserRole(UserRole.ROLE_ADMIN);
     when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
     when(mapper.map(user, UserResponse.class)).thenReturn(userResponseAdmin);
@@ -222,7 +222,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void registerAdminAlreadyRegistered_throwAppException() {
+  void registerAdminAlreadyRegistered_throwAppException() {
     when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
 
     try {
@@ -236,7 +236,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void registerEmployee_success() {
+  void registerEmployee_success() {
     userResponse.setUserRole(UserRole.ROLE_EMPLOYEE);
     user.setUserRole(UserRole.ROLE_EMPLOYEE);
     when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
@@ -260,7 +260,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void registerEmployeeAlreadyRegistered_throwAppException() {
+  void registerEmployeeAlreadyRegistered_throwAppException() {
     when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
 
     try {
@@ -274,7 +274,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void registerEmployeeNoEmail_throwAppException() {
+  void registerEmployeeNoEmail_throwAppException() {
     registerRequest.setEmail("");
 
     try {
@@ -287,7 +287,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void registerEmployeeNoFirstNameAndLastName_throwAppException() {
+  void registerEmployeeNoFirstNameAndLastName_throwAppException() {
     registerRequest.setFirstName("");
     registerRequest.setLastName("");
 
@@ -300,7 +300,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void editUserProfile_success() {
+  void editUserProfile_success() {
     when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
     when(mapper.map(editedUser, UserResponse.class)).thenReturn(editedUserResponse);
     when(passwordEncoder.matches(any(), any())).thenReturn(Boolean.TRUE);
@@ -323,7 +323,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void editUserProfileInvalidPassword_throwAppException() {
+  void editUserProfileInvalidPassword_throwAppException() {
     when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
     when(passwordEncoder.matches(any(), any())).thenReturn(Boolean.FALSE);
 
@@ -339,7 +339,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void editUserProfileUserNotFound_throwAppException() {
+  void editUserProfileUserNotFound_throwAppException() {
     when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
 
     try {
@@ -352,7 +352,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void editUserProfileUserExists_throwAppException() {
+  void editUserProfileUserExists_throwAppException() {
     editProfileRequest.setEmail("existing@gmail.com");
     when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
     when(userRepository.findByEmail("existing@gmail.com")).thenReturn(Optional.of(existingUser));

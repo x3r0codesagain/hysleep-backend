@@ -81,7 +81,7 @@ public class BookingControllerTest {
 
 
     @Test
-    public void book_success() throws Exception {
+    void book_success() throws Exception {
         when(bookingService.bookRoom(bookingRequest)).thenReturn(bookingResponse);
 
 
@@ -95,7 +95,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void bookFailedUserNotFound_throwAppException() throws Exception {
+    void bookFailedUserNotFound_throwAppException() throws Exception {
         when(bookingService.bookRoom(bookingRequest)).thenThrow(new AppException(ErrorCodes.USER_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND));
 
         this.mockMvc.perform(post("/api/v1/booking/public/book")
@@ -110,7 +110,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void bookFailed_throwException() throws Exception {
+    void bookFailed_throwException() throws Exception {
         when(bookingService.bookRoom(bookingRequest)).thenThrow(HttpServerErrorException.InternalServerError.class);
 
         this.mockMvc.perform(post("/api/v1/booking/public/book")
@@ -124,7 +124,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void cancel_success() throws Exception {
+    void cancel_success() throws Exception {
         when(bookingService.cancelBooking(ID)).thenReturn(bookingResponse);
 
 
@@ -138,7 +138,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void cancelBookingNotFound_throwAppException() throws Exception {
+    void cancelBookingNotFound_throwAppException() throws Exception {
         when(bookingService.cancelBooking(ID)).thenThrow(new AppException(ErrorCodes.DATA_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND));
 
         this.mockMvc.perform(post("/api/v1/booking/public/cancel")
@@ -153,7 +153,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void cancelFailed_throwException() throws Exception {
+    void cancelFailed_throwException() throws Exception {
         when(bookingService.cancelBooking(ID)).thenThrow(HttpServerErrorException.InternalServerError.class);
 
         this.mockMvc.perform(post("/api/v1/booking/public/cancel")
@@ -167,7 +167,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void doneBooking_success() throws Exception {
+    void doneBooking_success() throws Exception {
         when(bookingService.doneBooking(ID)).thenReturn(bookingResponse);
 
         this.mockMvc.perform(post("/api/v1/booking/public/done")
@@ -180,7 +180,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void doneBookingNotFound_throwAppException() throws Exception {
+    void doneBookingNotFound_throwAppException() throws Exception {
         when(bookingService.doneBooking(ID)).thenThrow(new AppException(ErrorCodes.DATA_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND));
 
         this.mockMvc.perform(post("/api/v1/booking/public/done")
@@ -195,7 +195,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void doneBookingFailed_throwException() throws Exception {
+    void doneBookingFailed_throwException() throws Exception {
         when(bookingService.doneBooking(ID)).thenThrow(HttpServerErrorException.InternalServerError.class);
 
         this.mockMvc.perform(post("/api/v1/booking/public/done")
@@ -209,7 +209,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void changeStatus_success() throws Exception {
+    void changeStatus_success() throws Exception {
         when(bookingService.changeStatusAfterTime()).thenReturn(bookingChangeResponse);
 
         this.mockMvc.perform(post("/api/v1/booking/public/change")
@@ -221,7 +221,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void changeStatusNotFound_throwException() throws Exception {
+    void changeStatusNotFound_throwException() throws Exception {
         when(bookingService.changeStatusAfterTime()).thenThrow(new AppException(ErrorCodes.DATA_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND));
 
         this.mockMvc.perform(post("/api/v1/booking/public/change")
@@ -233,7 +233,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void changeStatusFailed_throwException() throws Exception {
+    void changeStatusFailed_throwException() throws Exception {
         when(bookingService.changeStatusAfterTime()).thenThrow(HttpServerErrorException.InternalServerError.class);
 
         this.mockMvc.perform(post("/api/v1/booking/public/change")
