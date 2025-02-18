@@ -115,7 +115,7 @@ public class UserControllerTest {
                     .content(new ObjectMapper().writeValueAsString(loginRequest)))
             .andExpect(status().isInternalServerError())
             .andExpect(jsonPath("$.errorCode", equalTo(HttpStatus.INTERNAL_SERVER_ERROR.name())))
-            .andExpect(jsonPath("$.errorMessage", equalTo("Internal Error")));
+            .andExpect(jsonPath("$.errorMessage", equalTo(ErrorCodes.INTERNAL_SERVER_ERROR.getMessage())));
 
     verify(userService).login(loginRequest);
   }
@@ -365,7 +365,7 @@ public class UserControllerTest {
   }
 
   @AfterEach
-  private void tearDown() {
+  public void tearDown() {
     verifyNoMoreInteractions(userService);
   }
 }
