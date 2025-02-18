@@ -4,6 +4,7 @@ import com.app.octo.model.User;
 import com.app.octo.model.enums.ErrorCodes;
 import com.app.octo.model.enums.UserRole;
 import com.app.octo.model.exception.AppException;
+import com.app.octo.model.request.EditProfileRequest;
 import com.app.octo.model.request.LoginRequest;
 import com.app.octo.model.request.RegisterRequest;
 import com.app.octo.model.response.UserResponse;
@@ -73,7 +74,7 @@ public class UserServiceImpl implements UserService {
 
 
     user.setPassword(passwordEncoder.encode(CharBuffer.wrap(registerRequest.getPassword()))); //Store in hashed
-
+    
     userRepository.save(user);
 
     UserResponse userResponse = mapper.map(user, UserResponse.class);
@@ -98,6 +99,67 @@ public class UserServiceImpl implements UserService {
 
     UserResponse userResponse = mapper.map(user, UserResponse.class);
     return userResponse;
+  }
+
+  @Override
+  public UserResponse registerEmployee(RegisterRequest registerRequest) {
+    User userFromDB = userRepository.findByEmail(registerRequest.getEmail())
+        .orElseGet(() -> null);
+
+    if(Objects.nonNull(userFromDB)) {
+      throw new AppException("Account Exists", HttpStatus.BAD_REQUEST);
+    }
+
+    User user = mapper.map(registerRequest, User.class);
+    setAdditionalDataToUser(user, UserRole.ROLE_EMPLOYEE);
+
+    user.setPassword(passwordEncoder.encode(CharBuffer.wrap(registerRequest.getPassword()))); //Store in hashed
+
+    userRepository.save(user);
+
+    UserResponse userResponse = mapper.map(user, UserResponse.class);
+    return userResponse;
+  }
+
+  @Override
+  public UserResponse editUserProfile(EditProfileRequest editProfileRequest) {
+    User user = userRepository.findByEmail(editProfileRequest.getCurrentEmail()).orElseThrow(
+        () -> new AppException(ErrorCodes.USER_NOT_FOUND.getMessage(),
+            HttpStatus.NOT_FOUND));
+    if (!StringUtils.equals(editProfileRequest.getCurrentEmail(), editProfileRequest.getEmail())
+        && Objects.nonNull(
+        userRepository.findByEmail(editProfileRequest.getEmail()).orElse(null))) {
+      throw new AppException("Account Exists", HttpStatus.BAD_REQUEST);
+    }
+
+
+    setChangedDataToUser(user, editProfileRequest);
+
+    userRepository.save(user);
+
+    UserResponse userResponse = mapper.map(user, UserResponse.class);
+
+    return userResponse;
+  }
+
+  private void setChangedDataToUser(User user, EditProfileRequest editProfileRequest) {
+
+    if (StringUtils.isNotBlank(editProfileRequest.getEmail())){
+      user.setEmail(editProfileRequest.getEmail());
+    }
+    if (StringUtils.isNotBlank(editProfileRequest.getFirstName())){
+      user.setFirstName(editProfileRequest.getFirstName());
+    }
+    if (StringUtils.isNotBlank(editProfileRequest.getLastName())) {
+      user.setLastName(editProfileRequest.getLastName());
+    }
+    if (Objects.nonNull(editProfileRequest.getPassword()) && editProfileRequest.getPassword().length > 0) {
+      if (!passwordEncoder.matches(CharBuffer.wrap(editProfileRequest.getCurrentPassword()),
+          user.getPassword())) {
+        throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
+      }
+      user.setPassword(passwordEncoder.encode(CharBuffer.wrap(editProfileRequest.getPassword())));
+    }
   }
 
   private void setAdditionalDataToUser(User user, UserRole roleUser) {

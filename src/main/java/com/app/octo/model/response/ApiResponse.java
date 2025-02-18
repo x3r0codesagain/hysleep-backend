@@ -1,4 +1,4 @@
-package com.app.octo.dto;
+package com.app.octo.model.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,11 +7,8 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
-
-  private String firstName;
-  private String lastName;
-  private String email;
+@NoArgsConstructor
+public class ApiResponse<T> extends BaseResponse {
+    private T data;
 }

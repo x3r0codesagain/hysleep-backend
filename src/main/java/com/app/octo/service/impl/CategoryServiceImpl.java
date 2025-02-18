@@ -1,0 +1,82 @@
+package com.app.octo.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import com.app.octo.model.Category;
+import com.app.octo.model.enums.ErrorCodes;
+import com.app.octo.model.exception.AppException;
+import com.app.octo.model.request.CategoryRequest;
+import com.app.octo.model.request.CategoryUpdateRequest;
+import com.app.octo.model.response.ApiResponse;
+import com.app.octo.model.response.BookingResponse;
+import com.app.octo.model.response.CategoryGetResponse;
+import com.app.octo.model.response.CategoryResponse;
+import com.app.octo.repository.CategoryRepository;
+import com.app.octo.service.CategoryService;
+import org.dozer.Mapper;
+
+import jakarta.persistence.Access;
+
+@Service
+public class CategoryServiceImpl implements CategoryService{
+    
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private Mapper mapper;
+
+    public ApiResponse<List<CategoryGetResponse>> getAllCategories(){
+        List<Category> categories = categoryRepository.findAll();
+        List<CategoryGetResponse> categoryResponses = categories.stream()
+            .map(category -> mapper.map(category, CategoryGetResponse.class))
+            .collect(Collectors.toList());
+            ApiResponse<List<CategoryGetResponse>> apiResponse = new ApiResponse<List<CategoryGetResponse>>();
+            apiResponse.setData(categoryResponses);
+        return apiResponse;
+    }
+
+    public CategoryResponse createCategory(String categoryName){
+        Category categoryExists = categoryRepository.findByCategoryName(categoryName);
+        if (Objects.nonNull(categoryExists)) {
+            throw new AppException(ErrorCodes.CATEGORY_EXISTS.getMessage(), HttpStatus.NOT_FOUND);
+        }
+
+        Category newCategory = Category.builder().categoryName(categoryName).build();
+
+        categoryRepository.save(newCategory);
+
+        return mapper.map(newCategory, CategoryResponse.class);
+    }
+
+    public CategoryResponse updateCategoryName(CategoryUpdateRequest request){
+        Category category = categoryRepository.findByCategoryId(request.getCategoryId());
+        // if (Objects.nonNull(category)) {
+        //     throw new AppException(ErrorCodes.CATEGORY_EXISTS.getMessage(), HttpStatus.NOT_FOUND);
+        // }
+
+        if(category.getCategoryName().equals(request.getCategoryName())) {
+            throw new AppException(ErrorCodes.CATEGORY_EXISTS.getMessage(), HttpStatus.NOT_FOUND);
+        }
+
+        category.setCategoryName(request.getCategoryName());
+        categoryRepository.save(category);
+        return mapper.map(category, CategoryResponse.class);
+    }
+
+    public void deleteCategory(long categoryId){
+        Category category = categoryRepository.findByCategoryId(categoryId);
+        if (Objects.isNull(category)) {
+            throw new AppException(ErrorCodes.CATEGORY_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
+        }
+        categoryRepository.delete(category);
+    }
+    
+}
