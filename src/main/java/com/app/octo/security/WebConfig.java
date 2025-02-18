@@ -27,6 +27,7 @@ public class WebConfig {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowCredentials(true);
     configuration.addAllowedOrigin("http://localhost:3000");
+    configuration.addAllowedOrigin("http://localhost:3200");
     configuration.addAllowedOrigin("http://localhost:8082");
     configuration.addAllowedOrigin("http://localhost:8081");
     configuration.addAllowedOrigin("http://localhost:5173");
