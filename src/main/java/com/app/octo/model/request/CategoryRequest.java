@@ -1,18 +1,14 @@
 package com.app.octo.model.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookingRequest {
-  private Long roomId;
-  private String userEmail;
-  private int duration;
+public class CategoryRequest {
+    @NotBlank(message = "Category name is required")
+    private String categoryName;
 }

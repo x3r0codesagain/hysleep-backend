@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 @RestController
 @RequestMapping("api/v1/booking")
 public class BookingController {
@@ -55,6 +59,44 @@ public class BookingController {
       response.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.name());
       response.setErrorMessage(e.getMessage());
       return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @PostMapping("/public/done")
+  public ResponseEntity<BookingResponse> doneBooking(@RequestParam Long id) {
+    try {
+      BookingResponse response = bookingService.doneBooking(id);
+
+      return new ResponseEntity<>(response, HttpStatus.OK);
+    } catch (AppException e) {
+      BookingResponse response = new BookingResponse();
+      response.setErrorCode(e.getCode().name());
+      response.setErrorMessage(e.getMessage());
+      return new ResponseEntity<>(response, e.getCode());
+    } catch (Exception e) {
+      BookingResponse response = new BookingResponse();
+      response.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.name());
+      response.setErrorMessage(e.getMessage());
+      return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @PostMapping("/public/change")
+  public ResponseEntity<List<BookingResponse>> doneBookingAfter() {
+    try {
+      List<BookingResponse> response = bookingService.changeStatusAfterTime();
+
+      return new ResponseEntity<>(response, HttpStatus.OK);
+    } catch (AppException e) {
+      BookingResponse response = new BookingResponse();
+      response.setErrorCode(e.getCode().name());
+      response.setErrorMessage(e.getMessage());
+      return new ResponseEntity<>(new ArrayList<>(Arrays.asList(response)), e.getCode());
+    } catch (Exception e) {
+      BookingResponse response = new BookingResponse();
+      response.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.name());
+      response.setErrorMessage(e.getMessage());
+      return new ResponseEntity<>(new ArrayList<>(Arrays.asList(response)), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

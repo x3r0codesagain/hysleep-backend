@@ -1,6 +1,7 @@
 package com.app.octo.controller;
 
 import com.app.octo.model.exception.AppException;
+import com.app.octo.model.request.EditProfileRequest;
 import com.app.octo.model.request.LoginRequest;
 import com.app.octo.model.request.RegisterRequest;
 import com.app.octo.model.response.BaseResponse;
@@ -44,7 +45,7 @@ public class UserController {
       UserResponse userResponse = new UserResponse();
       userResponse.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.name());
       userResponse.setErrorMessage("Internal Error");
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(userResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -57,9 +58,15 @@ public class UserController {
 
       return new ResponseEntity<>(userResponse, HttpStatus.OK);
     } catch (AppException appException) {
-      return new ResponseEntity<>(null, appException.getCode());
+      UserResponse userResponse = new UserResponse();
+      userResponse.setErrorCode(appException.getCode().name());
+      userResponse.setErrorMessage(appException.getMessage());
+      return new ResponseEntity<>(userResponse, appException.getCode());
     } catch (Exception ex) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+      UserResponse userResponse = new UserResponse();
+      userResponse.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.name());
+      userResponse.setErrorMessage("Internal Error");
+      return new ResponseEntity<>(userResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -72,9 +79,57 @@ public class UserController {
 
       return new ResponseEntity<>(userResponse, HttpStatus.OK);
     } catch (AppException appException) {
-      return new ResponseEntity<>(null, appException.getCode());
+      UserResponse userResponse = new UserResponse();
+      userResponse.setErrorCode(appException.getCode().name());
+      userResponse.setErrorMessage(appException.getMessage());
+      return new ResponseEntity<>(userResponse, appException.getCode());
     } catch (Exception ex) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+      UserResponse userResponse = new UserResponse();
+      userResponse.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.name());
+      userResponse.setErrorMessage("Internal Error");
+      return new ResponseEntity<>(userResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @PostMapping("/register-emp")
+  public ResponseEntity<UserResponse> registerEmployee(@RequestBody RegisterRequest request) {
+
+    try {
+      UserResponse userResponse = userService.registerEmployee(request);
+      userResponse.setToken(userAuthProvider.generateToken(userResponse.getEmail(), userResponse.getUserRole().name()));
+
+      return new ResponseEntity<>(userResponse, HttpStatus.OK);
+    } catch (AppException appException) {
+      UserResponse userResponse = new UserResponse();
+      userResponse.setErrorCode(appException.getCode().name());
+      userResponse.setErrorMessage(appException.getMessage());
+      return new ResponseEntity<>(userResponse, appException.getCode());
+    } catch (Exception ex) {
+      UserResponse userResponse = new UserResponse();
+      userResponse.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.name());
+      userResponse.setErrorMessage("Internal Error");
+      return new ResponseEntity<>(userResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @PostMapping("/public/update")
+  public ResponseEntity<UserResponse> updateProfile(@RequestBody EditProfileRequest request) {
+
+    try {
+      UserResponse userResponse = userService.editUserProfile(request);
+      userResponse.setToken(userAuthProvider.generateToken(userResponse.getEmail(), userResponse.getUserRole().name()));
+
+      return new ResponseEntity<>(userResponse, HttpStatus.OK);
+    } catch (AppException appException) {
+      UserResponse userResponse = new UserResponse();
+      userResponse.setErrorCode(appException.getCode().name());
+      userResponse.setErrorMessage(appException.getMessage());
+      return new ResponseEntity<>(userResponse, appException.getCode());
+    } catch (Exception ex) {
+      UserResponse userResponse = new UserResponse();
+      userResponse.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.name());
+      userResponse.setErrorMessage("Internal Error");
+      return new ResponseEntity<>(userResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
