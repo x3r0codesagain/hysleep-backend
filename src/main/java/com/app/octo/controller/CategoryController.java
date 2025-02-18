@@ -19,6 +19,8 @@ import com.app.octo.model.request.CategoryRequest;
 import com.app.octo.model.request.CategoryUpdateRequest;
 import com.app.octo.service.CategoryService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("api/v1/category")
 public class CategoryController {
@@ -40,7 +42,7 @@ public class CategoryController {
         }
     }
     @PostMapping("/public/create-category")
-    public ResponseEntity<CategoryResponse> createCategory(@RequestBody CategoryRequest request){
+    public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest request){
         try {
             CategoryResponse newCategory = categoryService.createCategory(request.getCategoryName());
             return ResponseEntity.status(HttpStatus.CREATED).body(newCategory);
