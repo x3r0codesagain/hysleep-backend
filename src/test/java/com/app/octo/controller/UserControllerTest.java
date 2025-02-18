@@ -76,7 +76,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void login_failed_user_not_found() throws Exception {
+  public void loginFailedUserNotFound_throwAppException() throws Exception {
     when(userService.login(loginRequest)).thenThrow(new AppException(ErrorCodes.USER_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND));
 
     this.mockMvc.perform(post("/api/v1/users/login")
@@ -91,7 +91,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void login_failed_invalid_password() throws Exception {
+  public void loginFailedInvalidPassword_throwException() throws Exception {
     when(userService.login(loginRequest)).thenThrow(new AppException("Invalid password", HttpStatus.BAD_REQUEST));
 
     this.mockMvc.perform(post("/api/v1/users/login")
@@ -106,7 +106,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void login_failed_server() throws Exception {
+  public void loginFailed_throwException() throws Exception {
     when(userService.login(loginRequest)).thenThrow(HttpServerErrorException.InternalServerError.class);
 
     this.mockMvc.perform(post("/api/v1/users/login")
@@ -134,7 +134,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void register_failed_incomplete() throws Exception {
+  public void registerFailedIncomplete_throwAppException() throws Exception {
     when(userService.register(registerRequest)).thenThrow(new AppException("Incomplete Request", HttpStatus.BAD_REQUEST));
 
     this.mockMvc.perform(post("/api/v1/users/register")
@@ -149,7 +149,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void register_failed_account_exist() throws Exception {
+  public void registerFailedAccountExist_throwAppException() throws Exception {
     when(userService.register(registerRequest)).thenThrow(new AppException("Account Exists", HttpStatus.BAD_REQUEST));
 
     this.mockMvc.perform(post("/api/v1/users/register")
@@ -164,7 +164,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void register_failed_server() throws Exception {
+  public void registerFailedServer_throwException() throws Exception {
     when(userService.register(registerRequest)).thenThrow(HttpServerErrorException.InternalServerError.class);
 
     this.mockMvc.perform(post("/api/v1/users/register")
@@ -179,7 +179,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void register_admin_success() throws Exception {
+  public void registerAdmin_success() throws Exception {
     when(userService.registerAdmin(registerRequest)).thenReturn(userResponseAdmin);
 
     this.mockMvc.perform(post("/api/v1/users/register-admin")
@@ -192,7 +192,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void register_admin_account_exist() throws Exception {
+  public void registerAdminAccountExist_throwAppException() throws Exception {
     when(userService.registerAdmin(registerRequest)).thenThrow(new AppException("Account Exists", HttpStatus.BAD_REQUEST));
 
     this.mockMvc.perform(post("/api/v1/users/register-admin")
@@ -207,7 +207,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void register_admin_failed_server() throws Exception {
+  public void registerAdminFailed_throwException() throws Exception {
     when(userService.registerAdmin(registerRequest)).thenThrow(HttpServerErrorException.InternalServerError.class);
 
     this.mockMvc.perform(post("/api/v1/users/register-admin")
@@ -222,7 +222,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void register_employee_success() throws Exception {
+  public void registerEmployee_success() throws Exception {
     when(userService.registerEmployee(registerRequest)).thenReturn(userResponseEmployee);
 
     this.mockMvc.perform(post("/api/v1/users/register-emp")
@@ -235,7 +235,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void register_employee_account_exist() throws Exception {
+  public void registerEmployeeAccountExist_throwAppException() throws Exception {
     when(userService.registerEmployee(registerRequest)).thenThrow(new AppException("Account Exists", HttpStatus.BAD_REQUEST));
 
     this.mockMvc.perform(post("/api/v1/users/register-emp")
@@ -250,7 +250,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void register_employee_failed_server() throws Exception {
+  public void registerEmployeeFailed_throwException() throws Exception {
     when(userService.registerEmployee(registerRequest)).thenThrow(HttpServerErrorException.InternalServerError.class);
 
     this.mockMvc.perform(post("/api/v1/users/register-emp")
@@ -265,7 +265,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void update_user_success() throws Exception {
+  public void updateUser_success() throws Exception {
     when(userService.editUserProfile(editProfileRequest)).thenReturn(userResponse);
 
     this.mockMvc.perform(post("/api/v1/users/public/update")
@@ -278,7 +278,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void update_user_failed_email_taken() throws Exception {
+  public void updateUserFailedEmailTaken_throwAppException() throws Exception {
     when(userService.editUserProfile(editProfileRequest)).thenThrow(new AppException("Account Exists", HttpStatus.BAD_REQUEST));
 
     this.mockMvc.perform(post("/api/v1/users/public/update")
@@ -293,7 +293,7 @@ public class UserControllerTest {
   }
 
   @Test
-  public void update_user_failed_server() throws Exception {
+  public void updateUserFailedServer_throwException() throws Exception {
     when(userService.editUserProfile(editProfileRequest)).thenThrow(HttpServerErrorException.InternalServerError.class);
 
     this.mockMvc.perform(post("/api/v1/users/public/update")
