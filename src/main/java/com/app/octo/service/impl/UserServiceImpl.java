@@ -103,6 +103,12 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserResponse registerEmployee(RegisterRequest registerRequest) {
+    if (Objects.isNull(registerRequest) || StringUtils.isBlank(registerRequest.getFirstName())
+        || StringUtils.isBlank(registerRequest.getLastName()) || Objects.isNull(
+        registerRequest.getPassword()) || registerRequest.getPassword().length < 1
+        || StringUtils.isBlank(registerRequest.getEmail())) {
+      throw new AppException("Incomplete Request", HttpStatus.BAD_REQUEST);
+    }
     User userFromDB = userRepository.findByEmail(registerRequest.getEmail())
         .orElseGet(() -> null);
 
