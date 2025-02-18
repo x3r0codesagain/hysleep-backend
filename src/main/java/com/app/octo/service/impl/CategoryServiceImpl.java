@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -77,7 +78,11 @@ public class CategoryServiceImpl implements CategoryService{
         if (Objects.isNull(category)) {
             throw new AppException(ErrorCodes.CATEGORY_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
         }
-        categoryRepository.delete(category);
+        try {
+            categoryRepository.delete(category);
+        } catch (DataIntegrityViolationException e) {
+            throw new AppException("Cannot delete category. It is linked to existing rooms.", HttpStatus.BAD_REQUEST);
+        }
     }
     
 }
