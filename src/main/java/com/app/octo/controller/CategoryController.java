@@ -2,6 +2,8 @@ package com.app.octo.controller;
 
 import java.util.List;
 
+import com.app.octo.model.enums.ErrorCodes;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +24,11 @@ import com.app.octo.service.CategoryService;
 import jakarta.validation.Valid;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("api/v1/category")
 public class CategoryController {
-    
-    @Autowired
-    private CategoryService categoryService;
+
+    private final CategoryService categoryService;
     
     @GetMapping("/public/get-all")
     public ResponseEntity<ApiResponse<List<CategoryGetResponse>>> getAllCategories(){
@@ -34,8 +36,8 @@ public class CategoryController {
             ApiResponse<List<CategoryGetResponse>> category = categoryService.getAllCategories();
             return ResponseEntity.ok(category);
         } catch (Exception e) {
-            ApiResponse<List<CategoryGetResponse>> errorResponse = new ApiResponse<List<CategoryGetResponse>>();
-            errorResponse.setErrorCode("INTERNAL_SERVER_ERROR");
+            ApiResponse<List<CategoryGetResponse>> errorResponse = new ApiResponse<>();
+            errorResponse.setErrorCode(ErrorCodes.INTERNAL_SERVER_ERROR.getMessage());
             errorResponse.setErrorMessage("Error fetching categories: " + e.getMessage());
             return ResponseEntity.internalServerError().body(errorResponse);
 
@@ -53,7 +55,7 @@ public class CategoryController {
             return new ResponseEntity<>(response, e.getCode());
         } catch (Exception e) {
             CategoryResponse errorResponse = new CategoryResponse();
-            errorResponse.setErrorCode("INTERNAL_SERVER_ERROR");
+            errorResponse.setErrorCode(ErrorCodes.INTERNAL_SERVER_ERROR.getMessage());
             errorResponse.setErrorMessage("Error creating category: " + e.getMessage());
             return ResponseEntity.internalServerError().body(errorResponse);
         }
