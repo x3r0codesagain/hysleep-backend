@@ -13,17 +13,14 @@ import org.springframework.stereotype.Service;
 import com.app.octo.model.Category;
 import com.app.octo.model.enums.ErrorCodes;
 import com.app.octo.model.exception.AppException;
-import com.app.octo.model.request.CategoryRequest;
 import com.app.octo.model.request.CategoryUpdateRequest;
 import com.app.octo.model.response.ApiResponse;
-import com.app.octo.model.response.BookingResponse;
 import com.app.octo.model.response.CategoryGetResponse;
 import com.app.octo.model.response.CategoryResponse;
 import com.app.octo.repository.CategoryRepository;
 import com.app.octo.service.CategoryService;
 import org.dozer.Mapper;
 
-import jakarta.persistence.Access;
 
 @Service
 public class CategoryServiceImpl implements CategoryService{

@@ -59,7 +59,7 @@ public class CategoryController {
         }
     }
     @PostMapping("/public/update-name")
-    public ResponseEntity<CategoryResponse> updateCategoryName(@RequestBody CategoryUpdateRequest request){
+    public ResponseEntity<CategoryResponse> updateCategoryName(@Valid @RequestBody CategoryUpdateRequest request){
         try {
             CategoryResponse updateCategory = categoryService.updateCategoryName(request);
             return ResponseEntity.ok(updateCategory);
