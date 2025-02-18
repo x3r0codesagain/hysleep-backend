@@ -7,6 +7,7 @@ import com.app.octo.model.enums.ErrorCodes;
 import com.app.octo.model.exception.AppException;
 import com.app.octo.model.request.BookingRequest;
 import com.app.octo.model.response.BookingResponse;
+import com.app.octo.model.response.ListResponse;
 import com.app.octo.repository.BookingRepository;
 import com.app.octo.repository.RoomRepository;
 import com.app.octo.repository.UserRepository;
@@ -113,7 +114,7 @@ public class BookingServiceImpl implements BookingService {
   }
 
   @Override
-  public List<BookingResponse> changeStatusAfterTime() {
+  public ListResponse<BookingResponse> changeStatusAfterTime() {
     List<Booking> bookings = bookingRepository.findAllByStatus("ONGOING");
     List<BookingResponse> responses = new ArrayList<>();
     Date now = new Date();
@@ -123,6 +124,9 @@ public class BookingServiceImpl implements BookingService {
       }
     });
 
-    return responses;
+    ListResponse<BookingResponse> response = new ListResponse<>();
+    response.setVal(responses);
+
+    return response;
   }
 }

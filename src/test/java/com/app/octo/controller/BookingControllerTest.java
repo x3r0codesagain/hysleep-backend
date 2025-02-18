@@ -11,6 +11,7 @@ import com.app.octo.model.enums.UserRole;
 import com.app.octo.model.exception.AppException;
 import com.app.octo.model.request.BookingRequest;
 import com.app.octo.model.response.BookingResponse;
+import com.app.octo.model.response.ListResponse;
 import com.app.octo.service.BookingService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -74,7 +75,7 @@ public class BookingControllerTest {
     private UserDTO userDTO;
     private RoomDTO roomDTO;
     private BookingResponse bookingResponse;
-    private List<BookingResponse> bookingChangeResponse;
+    private ListResponse<BookingResponse> bookingChangeResponse;
     private BookingRequest bookingRequest;
     private MockMvc mockMvc;
 
@@ -238,7 +239,8 @@ public class BookingControllerTest {
         this.mockMvc.perform(post("/api/v1/booking/public/change")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isInternalServerError())
+            .andExpect(jsonPath("$.errorCode", equalTo(HttpStatus.INTERNAL_SERVER_ERROR.name())));
 
         verify(bookingService).changeStatusAfterTime();
     }
@@ -305,7 +307,8 @@ public class BookingControllerTest {
                 .status(BOOKING_STATUS)
                 .build();
 
-        List<BookingResponse> bookingChangeResponse = new ArrayList<>();
+        ListResponse<BookingResponse> bookingChangeResponse = new ListResponse<>();
+        bookingChangeResponse.setVal(new ArrayList<>());
 
         bookingRequest = BookingRequest.builder()
                 .roomId(ROOM_ID)
