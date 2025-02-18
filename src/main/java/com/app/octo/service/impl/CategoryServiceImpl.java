@@ -62,9 +62,6 @@ public class CategoryServiceImpl implements CategoryService{
             throw new AppException(ErrorCodes.CATEGORY_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
         }
 
-        // if(category.getCategoryName().equals(request.getCategoryName())) {
-        //     throw new AppException(ErrorCodes.CATEGORY_EXISTS.getMessage(), HttpStatus.NOT_FOUND);
-        // }
         Category existingCategory = categoryRepository.findByCategoryName(request.getCategoryName());
         if (Objects.nonNull(existingCategory)) {
             throw new AppException(ErrorCodes.CATEGORY_EXISTS.getMessage(), HttpStatus.NOT_FOUND);
