@@ -1,4 +1,4 @@
-package com.app.octo.dto;
+package com.app.octo.model.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
-
+public class EditProfileRequest {
+  private String currentEmail;
   private String firstName;
   private String lastName;
   private String email;
+  private char[] currentPassword;
+  private char[] password;
 }

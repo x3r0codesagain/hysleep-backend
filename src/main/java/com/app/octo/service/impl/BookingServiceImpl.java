@@ -11,12 +11,15 @@ import com.app.octo.repository.BookingRepository;
 import com.app.octo.repository.RoomRepository;
 import com.app.octo.repository.UserRepository;
 import com.app.octo.service.BookingService;
+import org.apache.commons.lang3.time.DateUtils;
 import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -53,10 +56,15 @@ public class BookingServiceImpl implements BookingService {
 
     roomRepository.save(room);
 
+    Date now = new Date();
+    Date end = DateUtils.addHours(now, request.getDuration());
+
     Booking booking = Booking.builder()
         .status("ONGOING")
         .user(user)
-        .bookingDate(new Date())
+        .bookingDate(now)
+        .startDate(now)
+        .endDate(end)
         .room(room)
         .build();
 
@@ -66,13 +74,26 @@ public class BookingServiceImpl implements BookingService {
 
   @Override
   public BookingResponse cancelBooking(Long id) {
+    BookingResponse response = processBookingCancelOrDone(id, "CANCELLED");
+
+    return response;
+  }
+
+  @Override
+  public BookingResponse doneBooking(Long id) {
+    BookingResponse response = processBookingCancelOrDone(id, "DONE");
+
+    return response;
+  }
+
+  private BookingResponse processBookingCancelOrDone(Long id, String status) {
     Booking booking = bookingRepository.findByBookingId(id);
 
     if (Objects.isNull(booking)) {
       throw new AppException(ErrorCodes.DATA_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    booking.setStatus("CANCELLED");
+    booking.setStatus(status);
 
     Room room = roomRepository.findByRoomIdAndStatus(booking.getRoom().getRoomId(), "BOOKED");
 
@@ -88,7 +109,20 @@ public class BookingServiceImpl implements BookingService {
     roomRepository.save(room);
 
     BookingResponse response = mapper.map(booking, BookingResponse.class);
-
     return response;
+  }
+
+  @Override
+  public List<BookingResponse> changeStatusAfterTime() {
+    List<Booking> bookings = bookingRepository.findAllByStatus("ONGOING");
+    List<BookingResponse> responses = new ArrayList<>();
+    Date now = new Date();
+    bookings.stream().forEach(booking -> {
+      if (now.after(booking.getEndDate())) {
+        responses.add(doneBooking(booking.getBookingId()));
+      }
+    });
+
+    return responses;
   }
 }
