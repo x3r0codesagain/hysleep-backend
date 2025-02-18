@@ -18,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
-import java.util.Date;
 import java.util.Objects;
 
 @Service
@@ -44,8 +43,7 @@ public class UserServiceImpl implements UserService {
 
     if(passwordEncoder.matches(
         CharBuffer.wrap(loginRequest.getPassword()), user.getPassword())){
-      UserResponse userResponse = mapper.map(user, UserResponse.class);
-      return userResponse;
+      return mapper.map(user, UserResponse.class);
     }
 
     throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
@@ -64,7 +62,7 @@ public class UserServiceImpl implements UserService {
         .orElseGet(() -> null);
 
     if(Objects.nonNull(userFromDB)) {
-      throw new AppException("Account Exists", HttpStatus.BAD_REQUEST);
+      throw new AppException(ErrorCodes.ACCOUNT_EXIST.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
 
@@ -77,8 +75,7 @@ public class UserServiceImpl implements UserService {
     
     userRepository.save(user);
 
-    UserResponse userResponse = mapper.map(user, UserResponse.class);
-    return userResponse;
+    return mapper.map(user, UserResponse.class);
   }
 
   @Override
@@ -87,7 +84,7 @@ public class UserServiceImpl implements UserService {
         .orElseGet(() -> null);
 
     if(Objects.nonNull(userFromDB)) {
-      throw new AppException("Account Exists", HttpStatus.BAD_REQUEST);
+      throw new AppException(ErrorCodes.ACCOUNT_EXIST.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     User user = mapper.map(registerRequest, User.class);
@@ -97,8 +94,7 @@ public class UserServiceImpl implements UserService {
 
     userRepository.save(user);
 
-    UserResponse userResponse = mapper.map(user, UserResponse.class);
-    return userResponse;
+    return mapper.map(user, UserResponse.class);
   }
 
   @Override
@@ -113,7 +109,7 @@ public class UserServiceImpl implements UserService {
         .orElseGet(() -> null);
 
     if(Objects.nonNull(userFromDB)) {
-      throw new AppException("Account Exists", HttpStatus.BAD_REQUEST);
+      throw new AppException(ErrorCodes.ACCOUNT_EXIST.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     User user = mapper.map(registerRequest, User.class);
@@ -123,8 +119,7 @@ public class UserServiceImpl implements UserService {
 
     userRepository.save(user);
 
-    UserResponse userResponse = mapper.map(user, UserResponse.class);
-    return userResponse;
+    return mapper.map(user, UserResponse.class);
   }
 
   @Override
@@ -135,7 +130,7 @@ public class UserServiceImpl implements UserService {
     if (!StringUtils.equals(editProfileRequest.getCurrentEmail(), editProfileRequest.getEmail())
         && Objects.nonNull(
         userRepository.findByEmail(editProfileRequest.getEmail()).orElse(null))) {
-      throw new AppException("Account Exists", HttpStatus.BAD_REQUEST);
+      throw new AppException(ErrorCodes.ACCOUNT_EXIST.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
 
@@ -143,9 +138,7 @@ public class UserServiceImpl implements UserService {
 
     userRepository.save(user);
 
-    UserResponse userResponse = mapper.map(user, UserResponse.class);
-
-    return userResponse;
+    return mapper.map(user, UserResponse.class);
   }
 
   private void setChangedDataToUser(User user, EditProfileRequest editProfileRequest) {

@@ -4,11 +4,10 @@ import com.app.octo.model.exception.AppException;
 import com.app.octo.model.request.EditProfileRequest;
 import com.app.octo.model.request.LoginRequest;
 import com.app.octo.model.request.RegisterRequest;
-import com.app.octo.model.response.BaseResponse;
 import com.app.octo.model.response.UserResponse;
 import com.app.octo.security.UserAuthProvider;
 import com.app.octo.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,13 +16,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("api/v1/users")
 public class UserController {
-  @Autowired
-  private UserService userService;
+  public static final String INTERNAL_ERROR = "Internal Error";
 
-  @Autowired
-  private UserAuthProvider userAuthProvider;
+  private final UserService userService;
+
+  private final UserAuthProvider userAuthProvider;
 
 
   @PostMapping("/login")
@@ -44,7 +44,7 @@ public class UserController {
     } catch (Exception ex) {
       UserResponse userResponse = new UserResponse();
       userResponse.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.name());
-      userResponse.setErrorMessage("Internal Error");
+      userResponse.setErrorMessage("Internal Server Error");
       return new ResponseEntity<>(userResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -65,7 +65,7 @@ public class UserController {
     } catch (Exception ex) {
       UserResponse userResponse = new UserResponse();
       userResponse.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.name());
-      userResponse.setErrorMessage("Internal Error");
+      userResponse.setErrorMessage(INTERNAL_ERROR);
       return new ResponseEntity<>(userResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -86,7 +86,7 @@ public class UserController {
     } catch (Exception ex) {
       UserResponse userResponse = new UserResponse();
       userResponse.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.name());
-      userResponse.setErrorMessage("Internal Error");
+      userResponse.setErrorMessage(INTERNAL_ERROR);
       return new ResponseEntity<>(userResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -107,7 +107,7 @@ public class UserController {
     } catch (Exception ex) {
       UserResponse userResponse = new UserResponse();
       userResponse.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.name());
-      userResponse.setErrorMessage("Internal Error");
+      userResponse.setErrorMessage(INTERNAL_ERROR);
       return new ResponseEntity<>(userResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -128,7 +128,7 @@ public class UserController {
     } catch (Exception ex) {
       UserResponse userResponse = new UserResponse();
       userResponse.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.name());
-      userResponse.setErrorMessage("Internal Error");
+      userResponse.setErrorMessage(INTERNAL_ERROR);
       return new ResponseEntity<>(userResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

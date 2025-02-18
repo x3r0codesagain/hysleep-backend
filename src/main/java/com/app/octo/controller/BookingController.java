@@ -5,7 +5,7 @@ import com.app.octo.model.request.BookingRequest;
 import com.app.octo.model.response.BookingResponse;
 import com.app.octo.model.response.ListResponse;
 import com.app.octo.service.BookingService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,16 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("api/v1/booking")
 public class BookingController {
 
-  @Autowired
-  private BookingService bookingService;
+  private final BookingService bookingService;
 
   @PostMapping("/public/book")
   public ResponseEntity<BookingResponse> bookRoom(@RequestBody BookingRequest bookingRequest) {

@@ -7,6 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ErrorCodes {
   USER_NOT_FOUND("User is not available in database."),
+  ACCOUNT_EXIST("Account Exists"),
   INCOMPLETE_DATA("Recheck data input."),
   DATA_EXISTS("The following data has been inputted previously."),
   UNABLE_TO_CONFIRM("There is an error during confirmation please retry."),
