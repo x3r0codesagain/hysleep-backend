@@ -24,7 +24,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.http.HttpStatus;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -50,6 +53,8 @@ public class BookingServiceTest {
   public static final String DESC = "DESC";
   public static final String CATEGORY_NAME = "CATEGORY_NAME";
   public static final String BOOKED_STATUS = "BOOKED";
+  public static final String DONE = "DONE";
+  public static final String CANCELLED = "CANCELLED";
   @InjectMocks
   private BookingServiceImpl bookingService;
 
@@ -156,7 +161,7 @@ public class BookingServiceTest {
     try {
       bookingService.cancelBooking(ID);
     } catch (AppException e) {
-      assertEquals(ErrorCodes.ROOM_NOT_FOUND.getMessage(), e.getMessage());
+      assertEquals(ErrorCodes.DATA_NOT_FOUND.getMessage(), e.getMessage());
       assertEquals(HttpStatus.NOT_FOUND, e.getCode());
     }
 
@@ -177,6 +182,95 @@ public class BookingServiceTest {
     }
 
     verify(bookingRepository).findByBookingId(ID);
+  }
+
+  @Test
+  public void doneBooking_success() {
+    bookingResponse.setStatus(DONE);
+    cancelledBooking.setStatus(DONE);
+    when(bookingRepository.findByBookingId(ID)).thenReturn(booking);
+    when(roomRepository.findByRoomIdAndStatus(ID, BOOKED_STATUS)).thenReturn(bookedRoom);
+    when(bookingRepository.save(any())).thenReturn(cancelledBooking);
+    when(roomRepository.save(room)).thenReturn(room);
+    when(mapper.map(any(), any())).thenReturn(bookingResponse);
+
+    BookingResponse response = bookingService.doneBooking(ID);
+    assertNotNull(response);
+    assertEquals(DONE, response.getStatus());
+    assertEquals(ID, response.getBookingId());
+
+    verify(roomRepository).findByRoomIdAndStatus(ID, BOOKED_STATUS);
+    verify(roomRepository).save(bookedRoom);
+    verify(bookingRepository).findByBookingId(ID);
+    verify(bookingRepository).save(any());
+    verify(mapper).map(any(), any());
+  }
+
+  @Test
+  public void doneBookingRoomNotFound_throwException() {
+    bookingResponse.setStatus(DONE);
+    when(bookingRepository.findByBookingId(ID)).thenReturn(booking);
+    when(roomRepository.findByRoomIdAndStatus(ID, BOOKED_STATUS)).thenReturn(null);
+
+    try {
+      bookingService.doneBooking(ID);
+    } catch (AppException e) {
+      assertEquals(ErrorCodes.DATA_NOT_FOUND.getMessage(), e.getMessage());
+      assertEquals(HttpStatus.NOT_FOUND, e.getCode());
+    }
+
+    verify(roomRepository).findByRoomIdAndStatus(ID, BOOKED_STATUS);
+    verify(bookingRepository).findByBookingId(ID);
+  }
+
+  @Test
+  public void doneBookingBookingNotFound_throwException() {
+    bookingResponse.setStatus(DONE);
+    when(bookingRepository.findByBookingId(ID)).thenReturn(null);
+
+    try {
+      bookingService.doneBooking(ID);
+    } catch (AppException e) {
+      assertEquals(ErrorCodes.DATA_NOT_FOUND.getMessage(), e.getMessage());
+      assertEquals(HttpStatus.NOT_FOUND, e.getCode());
+    }
+
+    verify(bookingRepository).findByBookingId(ID);
+  }
+
+  @Test
+  public void changeStatusAfterTime_success() {
+    Date newDate = DateUtils.addHours(new Date(), -4);
+    booking.setBookingDate(newDate);
+    booking.setEndDate(newDate);
+    List<Booking> bookings = new ArrayList<>(Arrays.asList(booking));
+    cancelledBooking.setStatus(DONE);
+    bookingResponse.setStatus(DONE);
+
+    when(bookingRepository.findAllByStatus("ONGOING")).thenReturn(bookings);
+    when(bookingRepository.findByBookingId(ID)).thenReturn(booking);
+    when(roomRepository.findByRoomIdAndStatus(ID, BOOKED_STATUS)).thenReturn(bookedRoom);
+    when(bookingRepository.save(any())).thenReturn(cancelledBooking);
+    when(roomRepository.save(room)).thenReturn(room);
+    when(mapper.map(any(), any())).thenReturn(bookingResponse);
+
+
+    List<BookingResponse> bookingResponses = this.bookingService.changeStatusAfterTime();
+
+    assertEquals(1, bookingResponses.size());
+    bookingResponses.stream().forEach(response -> {
+      assertEquals(DONE, response.getStatus());
+    });
+
+
+
+    verify(bookingRepository).findByBookingId(ID);
+    verify(bookingRepository).findAllByStatus("ONGOING");
+    verify(roomRepository).findByRoomIdAndStatus(ID, BOOKED_STATUS);
+    verify(roomRepository).save(bookedRoom);
+    verify(bookingRepository).findByBookingId(ID);
+    verify(bookingRepository).save(any());
+    verify(mapper).map(any(), any());
   }
 
 
