@@ -246,7 +246,7 @@ public class BookingControllerTest {
 
 
     @BeforeEach
-    private void init() {
+    public void init() {
         initMocks(this);
         this.mockMvc = standaloneSetup(this.bookingController).build();
 

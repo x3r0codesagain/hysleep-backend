@@ -308,7 +308,7 @@ public class UserControllerTest {
   }
 
   @BeforeEach
-  private void init() {
+  public void init() {
     initMocks(this);
     this.mockMvc = standaloneSetup(this.userController).build();
 
