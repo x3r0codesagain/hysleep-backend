@@ -32,7 +32,8 @@ public class WebSecurityConfig {
             .requestMatchers("/api/v1/*/admin/**").hasRole("ADMIN")
             .requestMatchers("/api/v1/*/public/**").authenticated()
             .requestMatchers("/api/v1/*/public-all-access/**").permitAll()
-            .requestMatchers("/v3/api-docs").permitAll()
+            .requestMatchers("/v3/api-docs/**").permitAll()
+            .requestMatchers("/swagger-ui/**").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/v1/users/**").permitAll()
             .anyRequest().authenticated());
 
