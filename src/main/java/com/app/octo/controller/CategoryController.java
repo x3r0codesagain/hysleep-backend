@@ -75,6 +75,11 @@ public class CategoryController {
         try{
             categoryService.deleteCategory(categoryId);
             return ResponseEntity.noContent().build();
+        } catch (AppException e) {
+            CategoryResponse response = new CategoryResponse();
+            response.setErrorCode(e.getCode().name());
+            response.setErrorMessage(e.getMessage());
+            return new ResponseEntity<>(response, e.getCode());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error deleting category: " + e.getMessage());
         } 
