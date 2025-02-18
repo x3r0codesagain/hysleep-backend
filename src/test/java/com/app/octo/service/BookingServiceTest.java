@@ -11,6 +11,7 @@ import com.app.octo.model.enums.UserRole;
 import com.app.octo.model.exception.AppException;
 import com.app.octo.model.request.BookingRequest;
 import com.app.octo.model.response.BookingResponse;
+import com.app.octo.model.response.ListResponse;
 import com.app.octo.repository.BookingRepository;
 import com.app.octo.repository.RoomRepository;
 import com.app.octo.repository.UserRepository;
@@ -255,10 +256,10 @@ public class BookingServiceTest {
     when(mapper.map(any(), any())).thenReturn(bookingResponse);
 
 
-    List<BookingResponse> bookingResponses = this.bookingService.changeStatusAfterTime();
+    ListResponse<BookingResponse> bookingResponses = this.bookingService.changeStatusAfterTime();
 
-    assertEquals(1, bookingResponses.size());
-    bookingResponses.stream().forEach(response -> {
+    assertEquals(1, bookingResponses.getVal().size());
+    bookingResponses.getVal().stream().forEach(response -> {
       assertEquals(DONE, response.getStatus());
     });
 
