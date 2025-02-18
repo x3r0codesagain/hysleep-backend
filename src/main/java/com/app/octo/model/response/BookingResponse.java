@@ -23,5 +23,7 @@ public class BookingResponse extends BaseResponse {
 
   private Date bookingDate;
 
+  private Date endDate;
+
   private String status;
 }

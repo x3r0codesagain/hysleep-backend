@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
+@Builder
 public class RoomDTO {
     private long roomId;
 
