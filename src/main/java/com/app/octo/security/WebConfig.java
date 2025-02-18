@@ -28,6 +28,7 @@ public class WebConfig {
     configuration.setAllowCredentials(true);
     configuration.addAllowedOrigin("http://localhost:3000");
     configuration.addAllowedOrigin("http://localhost:8082");
+    configuration.addAllowedOrigin("http://localhost:8081");
     configuration.addAllowedOrigin("http://localhost:5173");
     List<String> allowedHeaders = new ArrayList<>();
     allowedHeaders.add("*");
