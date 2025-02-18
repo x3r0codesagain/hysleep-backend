@@ -13,4 +13,5 @@ public class RoomResponseDTO {
     private String status;
     private String floor;
     private String roomDescription;
+    private String categoryName;
 }
