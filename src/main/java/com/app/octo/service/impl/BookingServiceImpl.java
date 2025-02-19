@@ -128,7 +128,7 @@ public class BookingServiceImpl implements BookingService {
   }
 
   @Override
-  public ListResponse<BookingResponse> getAllByStatus(GetAllByStatusRequest request) {
+  public ListResponse<BookingResponse> getAllByStatus(GetAllByStatusRequest request) throws Exception{
 
     if (!ONGOING.equals(request.getStatus()) && !"DONE".equals(request.getStatus())
         && !"CANCELLED".equals(request.getStatus())) {
@@ -152,7 +152,7 @@ public class BookingServiceImpl implements BookingService {
   }
 
   @Override
-  public ListResponse<BookingResponse> getAll() {
+  public ListResponse<BookingResponse> getAll() throws Exception{
 
     List<Booking> bookings = bookingRepository.findAll();
     List<BookingResponse> responses =
