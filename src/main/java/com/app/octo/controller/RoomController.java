@@ -1,28 +1,28 @@
 package com.app.octo.controller;
 
 import com.app.octo.dto.request.RoomRequestDTO;
+import com.app.octo.dto.request.RoomIdRequestDTO;
 import com.app.octo.dto.request.RoomUpdateStatusRequestDTO;
 import com.app.octo.dto.response.RoomResponseDTO;
 import com.app.octo.service.RoomService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/rooms")
 public class RoomController {
 
     private final RoomService roomService;
-    private static final Set<String> ALLOWED_STATUSES = Set.of("BOOKED", "AVAILABLE", "MAINTENANCE");
 
     public RoomController(RoomService roomService) {
         this.roomService = roomService;
     }
 
-    @GetMapping("/public/getAll")
-    public ResponseEntity<?> getAllRooms() {
+    @PostMapping("/public/getAll")
+    public ResponseEntity<Object> getAllRooms() {
         try {
             List<RoomResponseDTO> rooms = roomService.getAllRooms();
             return ResponseEntity.ok(rooms);
@@ -31,13 +31,14 @@ public class RoomController {
         }
     }
 
-    @GetMapping("/public/getById/{id}")
-    public ResponseEntity<?> getRoomById(@PathVariable("id") long roomId) {
+    @PostMapping("/public/getById")
+    public ResponseEntity<Object> getRoomById(@Valid @RequestBody RoomIdRequestDTO roomIdRequest) {
         try {
+            long roomId = roomIdRequest.getRoomId();
             if (!roomService.existsById(roomId)) {
                 return ResponseEntity.notFound().build();
             }
-            RoomResponseDTO room = roomService.getRoomById(roomId);
+            RoomResponseDTO room = roomService.getRoomById(roomIdRequest);
             return ResponseEntity.ok(room);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error fetching room: " + e.getMessage());
@@ -45,7 +46,7 @@ public class RoomController {
     }
 
     @PostMapping("/public/createRoom")
-    public ResponseEntity<?> createRoom(@RequestBody RoomRequestDTO roomRequest) {
+    public ResponseEntity<Object> createRoom(@Valid @RequestBody RoomRequestDTO roomRequest) {
         try {
             RoomResponseDTO createdRoom = roomService.createRoom(roomRequest);
             return ResponseEntity.ok(createdRoom);
@@ -54,32 +55,28 @@ public class RoomController {
         }
     }
 
-    @PutMapping("/public/updateStatus/{id}")
-    public ResponseEntity<?> updateStatus(@PathVariable("id") long roomId, @RequestBody RoomUpdateStatusRequestDTO roomUpdateStatus) {
+    @PostMapping("/public/updateStatus")
+    public ResponseEntity<Object> updateStatus(@Valid @RequestBody RoomUpdateStatusRequestDTO roomUpdateStatus) {
         try {
+            Long roomId = roomUpdateStatus.getRoomId();
             if (!roomService.existsById(roomId)) {
                 return ResponseEntity.notFound().build();
             }
-
-            String status = roomUpdateStatus.getStatus();
-            if (!ALLOWED_STATUSES.contains(status)) {
-                return ResponseEntity.badRequest().body("Invalid status. Allowed statuses: BOOKED, AVAILABLE, MAINTENANCE.");
-            }
-
-            RoomResponseDTO updatedRoom = roomService.updateStatus(roomId, roomUpdateStatus);
+            RoomResponseDTO updatedRoom = roomService.updateStatus(roomUpdateStatus);
             return ResponseEntity.ok(updatedRoom);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error updating status: " + e.getMessage());
         }
     }
 
-    @DeleteMapping("/public/delete/{id}")
-    public ResponseEntity<?> deleteRoom(@PathVariable("id") long roomId) {
+    @PostMapping("/public/delete")
+    public ResponseEntity<Object> deleteRoom(@Valid @RequestBody RoomIdRequestDTO roomIdRequest) {
         try {
+            Long roomId = roomIdRequest.getRoomId();
             if (!roomService.existsById(roomId)) {
                 return ResponseEntity.notFound().build();
             }
-            roomService.deleteRoom(roomId);
+            roomService.deleteRoom(roomIdRequest);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error deleting room: " + e.getMessage());
