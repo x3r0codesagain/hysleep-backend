@@ -44,7 +44,7 @@ public class CategoryController {
         }
     }
     @PostMapping("/public/create-category")
-    public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest request){
+    public ResponseEntity<CategoryResponse> createCategory(@RequestBody CategoryRequest request){
         try {
             CategoryResponse newCategory = categoryService.createCategory(request.getCategoryName());
             return ResponseEntity.status(HttpStatus.CREATED).body(newCategory);
@@ -61,7 +61,7 @@ public class CategoryController {
         }
     }
     @PostMapping("/public/update-name")
-    public ResponseEntity<CategoryResponse> updateCategoryName(@Valid @RequestBody CategoryUpdateRequest request){
+    public ResponseEntity<CategoryResponse> updateCategoryName(@RequestBody CategoryUpdateRequest request){
         try {
             CategoryResponse updateCategory = categoryService.updateCategoryName(request);
             return ResponseEntity.ok(updateCategory);
