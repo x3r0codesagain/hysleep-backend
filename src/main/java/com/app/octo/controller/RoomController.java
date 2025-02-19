@@ -5,12 +5,14 @@ import com.app.octo.dto.request.RoomIdRequestDTO;
 import com.app.octo.dto.request.RoomUpdateStatusRequestDTO;
 import com.app.octo.dto.response.RoomResponseDTO;
 import com.app.octo.service.RoomService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/rooms")
 public class RoomController {
@@ -27,6 +29,7 @@ public class RoomController {
             List<RoomResponseDTO> rooms = roomService.getAllRooms();
             return ResponseEntity.ok(rooms);
         } catch (Exception e) {
+            log.error("e: " + e.getMessage());
             return ResponseEntity.internalServerError().body("Error fetching rooms: " + e.getMessage());
         }
     }
