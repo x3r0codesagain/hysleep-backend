@@ -296,6 +296,46 @@ public class BookingControllerTest {
         verify(bookingService).getAllByStatus(getAllByStatusRequest);
     }
 
+    @Test
+    void getAll_success() throws Exception {
+        when(bookingService.getAll()).thenReturn(getAllResponse);
+
+        this.mockMvc.perform(post("/api/v1/booking/admin/getAll")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.errorMessage", equalTo(null)));
+
+        verify(bookingService).getAll();
+    }
+
+    @Test
+    void getAll_throwAppException() throws Exception {
+        when(bookingService.getAll()).thenThrow(
+                new AppException(ErrorCodes.BAD_REQUEST.getMessage(), HttpStatus.BAD_REQUEST));
+
+        this.mockMvc.perform(post("/api/v1/booking/admin/getAll")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMessage", equalTo(ErrorCodes.BAD_REQUEST.getMessage())));
+
+        verify(bookingService).getAll();
+    }
+
+    @Test
+    void getAll_throwException() throws Exception {
+        when(bookingService.getAll()).thenThrow(HttpServerErrorException.InternalServerError.class);
+
+        this.mockMvc.perform(post("/api/v1/booking/admin/getAll")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.errorCode", equalTo(HttpStatus.INTERNAL_SERVER_ERROR.name())));
+
+        verify(bookingService).getAll();
+    }
+
     @BeforeEach
     public void init() {
         initMocks(this);
