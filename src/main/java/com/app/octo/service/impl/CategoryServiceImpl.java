@@ -38,6 +38,9 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     public CategoryResponse createCategory(String categoryName){
+        if(categoryName.isEmpty()){
+            throw new AppException("Incomplete Request", HttpStatus.BAD_REQUEST);
+        }
         Category categoryExists = categoryRepository.findByCategoryName(categoryName);
         if (Objects.nonNull(categoryExists)) {
             throw new AppException(ErrorCodes.CATEGORY_EXISTS.getMessage(), HttpStatus.NOT_FOUND);
@@ -51,6 +54,9 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     public CategoryResponse updateCategoryName(CategoryUpdateRequest request){
+        if(request.getCategoryId() == 0 || request.getCategoryName().isEmpty()){
+            throw new AppException("Incomplete Request", HttpStatus.BAD_REQUEST);
+        }
         Category category = categoryRepository.findByCategoryId(request.getCategoryId());
         if (Objects.isNull(category)) {
             throw new AppException(ErrorCodes.CATEGORY_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
