@@ -1,5 +1,6 @@
 package com.app.octo.service;
 
+import com.app.octo.model.request.EditPasswordRequest;
 import com.app.octo.model.request.EditProfileRequest;
 import com.app.octo.model.request.LoginRequest;
 import com.app.octo.model.request.RegisterRequest;
@@ -12,4 +13,5 @@ public interface UserService {
   UserResponse registerAdmin(RegisterRequest registerRequest);
   UserResponse registerEmployee(RegisterRequest registerRequest);
   UserResponse editUserProfile(EditProfileRequest editProfileRequest);
+  UserResponse editPassword(EditPasswordRequest editPasswordRequest);
 }

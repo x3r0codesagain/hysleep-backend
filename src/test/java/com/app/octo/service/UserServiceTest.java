@@ -4,6 +4,7 @@ import com.app.octo.model.User;
 import com.app.octo.model.enums.ErrorCodes;
 import com.app.octo.model.enums.UserRole;
 import com.app.octo.model.exception.AppException;
+import com.app.octo.model.request.EditPasswordRequest;
 import com.app.octo.model.request.EditProfileRequest;
 import com.app.octo.model.request.LoginRequest;
 import com.app.octo.model.request.RegisterRequest;
@@ -60,6 +61,8 @@ public class UserServiceTest {
   private EditProfileRequest editProfileRequest;
   private User editedUser;
   private User existingUser;
+  private EditPasswordRequest editPasswordRequest;
+  private User newPassUser;
 
   @Test
   void findUser_success() {
@@ -366,6 +369,59 @@ public class UserServiceTest {
     verify(userRepository, times(2)).findByEmail(any());
   }
 
+
+  @Test
+  void editUserPassword_success() {
+    when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
+    when(mapper.map(newPassUser, UserResponse.class)).thenReturn(userResponse);
+    when(passwordEncoder.matches(any(), any())).thenReturn(Boolean.TRUE);
+    when(passwordEncoder.encode(CharBuffer.wrap(PASSWORD+"1"))).thenReturn("encoded");
+    when(userRepository.save(newPassUser)).thenReturn(newPassUser);
+
+
+    UserResponse response = this.userServiceImpl.editPassword(editPasswordRequest);
+    assertNotNull(response);
+    assertEquals(FIRST_NAME, response.getFirstName());
+    assertEquals(LAST_NAME, response.getLastName());
+    assertEquals(UserRole.ROLE_USER, response.getUserRole());
+    assertEquals(TOKEN, response.getToken());
+
+    verify(mapper).map(user, UserResponse.class);
+    verify(userRepository).findByEmail(EMAIL);
+    verify(userRepository).save(user);
+    verify(passwordEncoder).encode(CharBuffer.wrap(PASSWORD+"1"));
+    verify(passwordEncoder).matches(any(), any());
+  }
+
+  @Test
+  void editPasswordInvalidPassword_throwAppException() {
+    when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
+    when(passwordEncoder.matches(any(), any())).thenReturn(Boolean.FALSE);
+
+    try {
+      this.userServiceImpl.editPassword(editPasswordRequest);
+    } catch (AppException e) {
+      assertEquals("Invalid password", e.getMessage());
+      assertEquals(HttpStatus.BAD_REQUEST, e.getCode());
+    }
+
+    verify(userRepository).findByEmail(EMAIL);
+    verify(passwordEncoder).matches(any(), any());
+  }
+
+  @Test
+  void editUserPasswordUserNotFound_throwAppException() {
+    when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
+
+    try {
+      this.userServiceImpl.editPassword(editPasswordRequest);
+    } catch (AppException e) {
+      assertEquals(ErrorCodes.USER_NOT_FOUND.getMessage(), e.getMessage());
+      assertEquals(HttpStatus.NOT_FOUND, e.getCode());
+    }
+    verify(userRepository).findByEmail(EMAIL);
+  }
+
   @BeforeEach
   public void innit() {
     initMocks(this);
@@ -440,6 +496,21 @@ public class UserServiceTest {
         .email(EMAIL)
         .password(PASSWORD.toCharArray())
         .currentPassword(PASSWORD.toCharArray())
+        .build();
+
+    editPasswordRequest = EditPasswordRequest.builder()
+        .currentEmail(EMAIL)
+        .password((PASSWORD+"1").toCharArray())
+        .currentPassword((PASSWORD).toCharArray())
+        .build();
+
+    newPassUser = User.builder()
+        .userRole(UserRole.ROLE_USER)
+        .firstName(FIRST_NAME)
+        .lastName(LAST_NAME)
+        .id(ID)
+        .email(EMAIL)
+        .password("encoded")
         .build();
   }
 

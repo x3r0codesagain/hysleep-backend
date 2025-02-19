@@ -4,6 +4,7 @@ import com.app.octo.model.User;
 import com.app.octo.model.enums.ErrorCodes;
 import com.app.octo.model.enums.UserRole;
 import com.app.octo.model.exception.AppException;
+import com.app.octo.model.request.EditPasswordRequest;
 import com.app.octo.model.request.EditProfileRequest;
 import com.app.octo.model.request.LoginRequest;
 import com.app.octo.model.request.RegisterRequest;
@@ -59,6 +60,7 @@ public class UserControllerTest {
   private RegisterRequest registerRequest;
   private EditProfileRequest editProfileRequest;
   private MockMvc mockMvc;
+  private EditPasswordRequest editPasswordRequest;
 
   @Test
   void login_success() throws Exception {
@@ -307,6 +309,50 @@ public class UserControllerTest {
     verify(userService).editUserProfile(editProfileRequest);
   }
 
+  @Test
+  void updatePasswordUser_success() throws Exception {
+    when(userService.editPassword(editPasswordRequest)).thenReturn(userResponse);
+    when(userAuthProvider.generateToken(any(), any())).thenReturn(TOKEN);
+
+    this.mockMvc.perform(post("/api/v1/users/public/update-password")
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(editPasswordRequest)))
+        .andExpect(status().isOk());
+
+    verify(userService).editPassword(editPasswordRequest);
+  }
+
+  @Test
+  void updatePassword_throwAppException() throws Exception {
+    when(userService.editPassword(editPasswordRequest)).thenThrow(new AppException("Invalid password", HttpStatus.BAD_REQUEST));
+
+    this.mockMvc.perform(post("/api/v1/users/public/update-password")
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(editPasswordRequest)))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.errorCode", equalTo(HttpStatus.BAD_REQUEST.name())))
+        .andExpect(jsonPath("$.errorMessage", equalTo("Invalid password")));
+
+    verify(userService).editPassword(editPasswordRequest);
+  }
+
+  @Test
+  void updatePasswordFailedServer_throwException() throws Exception {
+    when(userService.editPassword(editPasswordRequest)).thenThrow(HttpServerErrorException.InternalServerError.class);
+
+    this.mockMvc.perform(post("/api/v1/users/public/update-password")
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(editPasswordRequest)))
+        .andExpect(status().isInternalServerError())
+        .andExpect(jsonPath("$.errorCode", equalTo(HttpStatus.INTERNAL_SERVER_ERROR.name())))
+        .andExpect(jsonPath("$.errorMessage", equalTo("Internal Error")));
+
+    verify(userService).editPassword(editPasswordRequest);
+  }
+
   @BeforeEach
   public void init() {
     initMocks(this);
@@ -362,6 +408,12 @@ public class UserControllerTest {
             .currentPassword(CURRENT_PASSWORD.toCharArray())
             .password(PASSWORD.toCharArray())
             .build();
+
+    editPasswordRequest = EditPasswordRequest.builder()
+        .currentEmail(CURRENT_EMAIL)
+        .currentPassword(CURRENT_PASSWORD.toCharArray())
+        .password(PASSWORD.toCharArray())
+        .build();
   }
 
   @AfterEach
