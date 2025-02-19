@@ -10,6 +10,7 @@ import com.app.octo.model.enums.ErrorCodes;
 import com.app.octo.model.enums.UserRole;
 import com.app.octo.model.exception.AppException;
 import com.app.octo.model.request.BookingRequest;
+import com.app.octo.model.request.GetAllByStatusRequest;
 import com.app.octo.model.response.BookingResponse;
 import com.app.octo.model.response.ListResponse;
 import com.app.octo.repository.BookingRepository;
@@ -56,6 +57,7 @@ public class BookingServiceTest {
   public static final String BOOKED_STATUS = "BOOKED";
   public static final String DONE = "DONE";
   public static final String CANCELLED = "CANCELLED";
+  public static final String ONGOING = "ONGOING";
   @InjectMocks
   private BookingServiceImpl bookingService;
 
@@ -80,6 +82,9 @@ public class BookingServiceTest {
   private Room bookedRoom;
   private Booking booking;
   private Booking cancelledBooking;
+  private List<BookingResponse> bookingResponses;
+  private List<Booking> bookings;
+  private GetAllByStatusRequest getAllByStatusRequest;
 
   @Test
   void bookRoom_success() {
@@ -91,7 +96,7 @@ public class BookingServiceTest {
 
     BookingResponse response = bookingService.bookRoom(bookingRequest);
     assertNotNull(response);
-    assertEquals("ONGOING", response.getStatus());
+    assertEquals(ONGOING, response.getStatus());
     assertEquals(ID, response.getBookingId());
 
     verify(roomRepository).findByRoomIdAndStatus(ID, AVAILABLE_STATUS);
@@ -248,7 +253,7 @@ public class BookingServiceTest {
     cancelledBooking.setStatus(DONE);
     bookingResponse.setStatus(DONE);
 
-    when(bookingRepository.findAllByStatus("ONGOING")).thenReturn(bookings);
+    when(bookingRepository.findAllByStatus(ONGOING)).thenReturn(bookings);
     when(bookingRepository.findByBookingId(ID)).thenReturn(booking);
     when(roomRepository.findByRoomIdAndStatus(ID, BOOKED_STATUS)).thenReturn(bookedRoom);
     when(bookingRepository.save(any())).thenReturn(cancelledBooking);
@@ -266,12 +271,111 @@ public class BookingServiceTest {
 
 
     verify(bookingRepository).findByBookingId(ID);
-    verify(bookingRepository).findAllByStatus("ONGOING");
+    verify(bookingRepository).findAllByStatus(ONGOING);
     verify(roomRepository).findByRoomIdAndStatus(ID, BOOKED_STATUS);
     verify(roomRepository).save(bookedRoom);
     verify(bookingRepository).findByBookingId(ID);
     verify(bookingRepository).save(any());
     verify(mapper).map(any(), any());
+  }
+
+  @Test
+  void getAllFiltered_success() throws Exception {
+    bookingResponse.setStatus(ONGOING);
+
+    when(userRepository.findByEmail(USER_HYSLEEP_COM)).thenReturn(Optional.of(user));
+    when(bookingRepository.findByUser_idAndStatus(ID, ONGOING)).thenReturn(bookings);
+    when(mapper.map(booking, BookingResponse.class)).thenReturn(bookingResponse);
+
+
+    ListResponse<BookingResponse> bookingResponses =
+        this.bookingService.getAllByStatus(getAllByStatusRequest);
+
+    assertEquals(1, bookingResponses.getVal().size());
+    bookingResponses.getVal().stream().forEach(response -> {
+      assertEquals(ONGOING, response.getStatus());
+    });
+
+
+
+    verify(bookingRepository).findByUser_idAndStatus(ID, ONGOING);
+    verify(userRepository).findByEmail(USER_HYSLEEP_COM);
+    verify(mapper).map(booking, BookingResponse.class);
+  }
+
+  @Test
+  void getAllFilteredWrongStatus_throwAppException() throws Exception {
+    getAllByStatusRequest.setStatus("XYZ");
+
+
+    try {
+      this.bookingService.getAllByStatus(getAllByStatusRequest);
+    } catch (AppException e) {
+      assertEquals(ErrorCodes.BAD_REQUEST.getMessage(), e.getMessage());
+      assertEquals(HttpStatus.BAD_REQUEST, e.getCode());
+    }
+  }
+
+  @Test
+  void getAllFilteredUserNotFound_throwAppException() throws Exception {
+    when(userRepository.findByEmail(USER_HYSLEEP_COM)).thenReturn(Optional.empty());
+
+    try {
+      this.bookingService.getAllByStatus(getAllByStatusRequest);
+    } catch (AppException e) {
+      assertEquals(ErrorCodes.USER_NOT_FOUND.getMessage(), e.getMessage());
+      assertEquals(HttpStatus.NOT_FOUND, e.getCode());
+    }
+
+    verify(userRepository).findByEmail(USER_HYSLEEP_COM);
+  }
+
+  @Test
+  void getAllFilteredBookingEmpty_success() throws Exception {
+    when(userRepository.findByEmail(USER_HYSLEEP_COM)).thenReturn(Optional.of(user));
+    when(bookingRepository.findByUser_idAndStatus(ID, ONGOING)).thenReturn(new ArrayList<>());
+
+    ListResponse<BookingResponse> bookingResponses = this.bookingService.getAllByStatus(getAllByStatusRequest);
+
+    assertEquals(0, bookingResponses.getVal().size());
+
+    verify(userRepository).findByEmail(USER_HYSLEEP_COM);
+    verify(bookingRepository).findByUser_idAndStatus(ID, ONGOING);
+  }
+
+  @Test
+  void getAll_success() throws Exception {
+    when(bookingRepository.findAll()).thenReturn(bookings);
+    when(mapper.map(booking, BookingResponse.class)).thenReturn(bookingResponse);
+
+
+    ListResponse<BookingResponse> bookingResponses =
+        this.bookingService.getAll();
+
+    assertEquals(1, bookingResponses.getVal().size());
+    bookingResponses.getVal().stream().forEach(response -> {
+      assertEquals(ONGOING, response.getStatus());
+    });
+
+
+
+    verify(bookingRepository).findAll();
+    verify(mapper).map(booking, BookingResponse.class);
+  }
+
+  @Test
+  void getAllEmpty_success() throws Exception {
+    when(bookingRepository.findAll()).thenReturn(new ArrayList<>());
+
+
+    ListResponse<BookingResponse> bookingResponses =
+        this.bookingService.getAll();
+
+    assertEquals(0, bookingResponses.getVal().size());
+
+
+
+    verify(bookingRepository).findAll();
   }
 
 
@@ -330,7 +434,7 @@ public class BookingServiceTest {
         .room(roomDTO)
         .endDate(end)
         .user(userDTO)
-        .status("ONGOING")
+        .status(ONGOING)
         .build();
 
     booking = Booking.builder()
@@ -339,7 +443,7 @@ public class BookingServiceTest {
         .room(bookedRoom)
         .endDate(end)
         .user(user)
-        .status("ONGOING")
+        .status(ONGOING)
         .build();
 
     cancelledBooking = Booking.builder()
@@ -349,6 +453,17 @@ public class BookingServiceTest {
         .endDate(end)
         .user(user)
         .status("CANCELLED")
+        .build();
+
+    bookingResponses = new ArrayList<>();
+    bookingResponses.add(bookingResponse);
+
+    bookings = new ArrayList<>();
+    bookings.add(booking);
+
+    getAllByStatusRequest = GetAllByStatusRequest.builder()
+        .status(ONGOING)
+        .email(USER_HYSLEEP_COM)
         .build();
   }
 
