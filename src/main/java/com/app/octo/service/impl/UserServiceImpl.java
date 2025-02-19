@@ -4,6 +4,7 @@ import com.app.octo.model.User;
 import com.app.octo.model.enums.ErrorCodes;
 import com.app.octo.model.enums.UserRole;
 import com.app.octo.model.exception.AppException;
+import com.app.octo.model.request.EditPasswordRequest;
 import com.app.octo.model.request.EditProfileRequest;
 import com.app.octo.model.request.LoginRequest;
 import com.app.octo.model.request.RegisterRequest;
@@ -135,6 +136,26 @@ public class UserServiceImpl implements UserService {
 
 
     setChangedDataToUser(user, editProfileRequest);
+
+    userRepository.save(user);
+
+    return mapper.map(user, UserResponse.class);
+  }
+
+  @Override
+  public UserResponse editPassword(EditPasswordRequest editPasswordRequest) {
+    User user = userRepository.findByEmail(editPasswordRequest.getCurrentEmail()).orElseThrow(
+        () -> new AppException(ErrorCodes.USER_NOT_FOUND.getMessage(),
+            HttpStatus.NOT_FOUND));
+
+
+    if (Objects.nonNull(editPasswordRequest.getPassword()) && editPasswordRequest.getPassword().length > 0) {
+      if (!passwordEncoder.matches(CharBuffer.wrap(editPasswordRequest.getCurrentPassword()),
+          user.getPassword())) {
+        throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
+      }
+      user.setPassword(passwordEncoder.encode(CharBuffer.wrap(editPasswordRequest.getPassword())));
+    }
 
     userRepository.save(user);
 
