@@ -1,5 +1,6 @@
 package com.app.octo.dto.response;
 
+import com.app.octo.model.Category;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,5 +14,5 @@ public class RoomResponseDTO {
     private String status;
     private String floor;
     private String roomDescription;
-    private String categoryName;
+    private Category category;
 }
