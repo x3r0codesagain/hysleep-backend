@@ -78,6 +78,6 @@ public class WebConfig {
                     .name("BearerAuth")
                     .type(SecurityScheme.Type.HTTP)
                     .scheme("bearer")
-                    .bearerFormat("JWT"))); // Optional, helps UI display correctly
+                    .bearerFormat("JWT")));
   }
 }
