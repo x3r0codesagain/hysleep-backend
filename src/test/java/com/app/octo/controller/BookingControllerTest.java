@@ -10,6 +10,7 @@ import com.app.octo.model.enums.ErrorCodes;
 import com.app.octo.model.enums.UserRole;
 import com.app.octo.model.exception.AppException;
 import com.app.octo.model.request.BookingRequest;
+import com.app.octo.model.request.GetAllByStatusRequest;
 import com.app.octo.model.response.BookingResponse;
 import com.app.octo.model.response.ListResponse;
 import com.app.octo.service.BookingService;
@@ -25,6 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -59,6 +61,7 @@ public class BookingControllerTest {
     public static final Long ID = 1L;
 
     public static final Integer DURATION = 1;
+    public static final String ONGOING = "ONGOING";
 
 
     @InjectMocks
@@ -77,6 +80,9 @@ public class BookingControllerTest {
     private ListResponse<BookingResponse> bookingChangeResponse;
     private BookingRequest bookingRequest;
     private MockMvc mockMvc;
+    private GetAllByStatusRequest getAllByStatusRequest;
+    private ListResponse<BookingResponse> getAllResponse;
+    private BookingResponse ongoingResponse;
 
 
     @Test
@@ -244,7 +250,51 @@ public class BookingControllerTest {
         verify(bookingService).changeStatusAfterTime();
     }
 
+    @Test
+    void getAllFiltered_success() throws Exception {
+        when(bookingService.getAllByStatus(getAllByStatusRequest)).thenReturn(getAllResponse);
 
+        this.mockMvc.perform(post("/api/v1/booking/public/getAllFiltered")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(getAllByStatusRequest)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.errorMessage", equalTo(null)));
+
+        verify(bookingService).getAllByStatus(getAllByStatusRequest);
+    }
+
+    @Test
+    void getAllFilteredWrongStatus_throwAppException() throws Exception {
+        getAllByStatusRequest.setStatus(BOOKING_STATUS);
+        when(bookingService.getAllByStatus(getAllByStatusRequest)).thenThrow(
+            new AppException(ErrorCodes.BAD_REQUEST.getMessage(), HttpStatus.BAD_REQUEST));
+
+        this.mockMvc.perform(post("/api/v1/booking/public/getAllFiltered")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(getAllByStatusRequest)))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errorMessage", equalTo(ErrorCodes.BAD_REQUEST.getMessage())));
+
+        verify(bookingService).getAllByStatus(getAllByStatusRequest);
+    }
+
+    @Test
+    void getAllFilteredWrongStatus_throwException() throws Exception {
+        getAllByStatusRequest.setStatus(BOOKING_STATUS);
+        when(bookingService.getAllByStatus(getAllByStatusRequest)).thenThrow(
+            new Exception());
+
+        this.mockMvc.perform(post("/api/v1/booking/public/getAllFiltered")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(getAllByStatusRequest)))
+            .andExpect(status().isInternalServerError())
+            .andExpect(jsonPath("$.errorCode", equalTo(HttpStatus.INTERNAL_SERVER_ERROR.name())));
+
+        verify(bookingService).getAllByStatus(getAllByStatusRequest);
+    }
 
     @BeforeEach
     public void init() {
@@ -314,6 +364,21 @@ public class BookingControllerTest {
                 .userEmail(EMAIL)
                 .duration(DURATION)
                 .build();
+
+        getAllByStatusRequest = GetAllByStatusRequest.builder()
+            .email(EMAIL)
+            .status(ONGOING)
+            .build();
+
+        ongoingResponse = BookingResponse.builder()
+            .bookingId(ID)
+            .user(userDTO)
+            .room(roomDTO)
+            .bookingDate(BOOKING_DATE)
+            .status(ONGOING)
+            .build();
+
+        getAllResponse = new ListResponse<>(Arrays.asList(ongoingResponse));
     }
 
     @AfterEach
