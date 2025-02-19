@@ -13,6 +13,6 @@ public interface BookingService {
   BookingResponse cancelBooking(Long id);
   BookingResponse doneBooking(Long id);
   ListResponse<BookingResponse> changeStatusAfterTime();
-  ListResponse<BookingResponse> getAllByStatus(GetAllByStatusRequest request);
-  ListResponse<BookingResponse> getAll();
+  ListResponse<BookingResponse> getAllByStatus(GetAllByStatusRequest request) throws Exception;
+  ListResponse<BookingResponse> getAll() throws Exception;
 }

@@ -270,7 +270,7 @@ public class CategoryControllerTest {
         categoryGetResponse.setData(categories);   
     }
     @AfterEach
-    private void tearDown() {
+    public void tearDown() {
         verifyNoMoreInteractions(categoryService);
     }
 }

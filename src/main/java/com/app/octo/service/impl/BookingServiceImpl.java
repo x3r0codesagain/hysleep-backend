@@ -14,6 +14,7 @@ import com.app.octo.repository.RoomRepository;
 import com.app.octo.repository.UserRepository;
 import com.app.octo.service.BookingService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.dozer.Mapper;
 import org.springframework.http.HttpStatus;
@@ -128,21 +129,30 @@ public class BookingServiceImpl implements BookingService {
   }
 
   @Override
-  public ListResponse<BookingResponse> getAllByStatus(GetAllByStatusRequest request) {
+  public ListResponse<BookingResponse> getAllByStatus(GetAllByStatusRequest request) throws Exception{
 
-    if (!ONGOING.equals(request.getStatus()) && !"DONE".equals(request.getStatus())
+
+     if (StringUtils.isNotBlank(request.getStatus()) && !ONGOING.equals(request.getStatus()) && !"DONE".equals(request.getStatus())
         && !"CANCELLED".equals(request.getStatus())) {
       throw new AppException(ErrorCodes.BAD_REQUEST.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+
 
     User user = userRepository.findByEmail(request.getEmail()).orElseGet(() -> null);
 
     if (Objects.isNull(user)) {
       throw new AppException(ErrorCodes.USER_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
     }
+    List<Booking> bookings = new ArrayList<>();
 
-    List<Booking> bookings = bookingRepository.findByUser_idAndStatus(user.getId(),
-        request.getStatus());
+    if (StringUtils.isBlank(request.getStatus())) {
+      bookings = bookingRepository.findByUser_id(user.getId());
+    } else {
+      bookings = bookingRepository.findByUser_idAndStatus(user.getId(),
+          request.getStatus());
+    }
+
 
     List<BookingResponse> responses =
         bookings.stream().map(booking -> mapper.map(booking, BookingResponse.class))
@@ -152,7 +162,7 @@ public class BookingServiceImpl implements BookingService {
   }
 
   @Override
-  public ListResponse<BookingResponse> getAll() {
+  public ListResponse<BookingResponse> getAll() throws Exception{
 
     List<Booking> bookings = bookingRepository.findAll();
     List<BookingResponse> responses =
