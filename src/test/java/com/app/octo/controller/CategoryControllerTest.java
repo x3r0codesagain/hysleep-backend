@@ -57,7 +57,7 @@ public class CategoryControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    public void createCategory_success() throws Exception {
+    void createCategory_success() throws Exception {
         when(categoryService.createCategory(categoryRequest.getCategoryName())).thenReturn(categoryResponse);
 
 
@@ -71,7 +71,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void createCategoryExist_throwAppError() throws Exception {
+    void createCategoryExist_throwAppError() throws Exception {
         when(categoryService.createCategory(categoryRequest.getCategoryName()))
         .thenThrow(new AppException(ErrorCodes.CATEGORY_EXISTS.getMessage(), HttpStatus.NOT_FOUND));
 
@@ -88,7 +88,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void createCategory_throwException() throws Exception {
+    void createCategory_throwException() throws Exception {
         when(categoryService.createCategory(categoryRequest.getCategoryName()))
         .thenThrow(HttpServerErrorException.InternalServerError.class);
 
@@ -104,7 +104,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void updateCategoryName_success() throws Exception {
+    void updateCategoryName_success() throws Exception {
         when(categoryService.updateCategoryName(categoryUpdateRequest)).thenReturn(categoryResponse);
 
 
@@ -118,7 +118,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void updateCategoryName_throwAppError() throws Exception {
+    void updateCategoryName_throwAppError() throws Exception {
         when(categoryService.updateCategoryName(categoryUpdateRequest))
         .thenThrow(new AppException(ErrorCodes.CATEGORY_EXISTS.getMessage(), HttpStatus.NOT_FOUND));
 
@@ -135,7 +135,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void updateCategoryName_throwException() throws Exception {
+    void updateCategoryName_throwException() throws Exception {
         when(categoryService.updateCategoryName(categoryUpdateRequest))
         .thenThrow(HttpServerErrorException.InternalServerError.class);
 
@@ -151,7 +151,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void deleteCategory_success() throws Exception {
+    void deleteCategory_success() throws Exception {
         doNothing().when(categoryService).deleteCategory(CATEGORY_ID);
 
         this.mockMvc.perform(post("/api/v1/category/public/delete-category")
@@ -164,7 +164,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void deleteCategoryNotFound_throwAppError() throws Exception {
+    void deleteCategoryNotFound_throwAppError() throws Exception {
         doThrow(new AppException(ErrorCodes.CATEGORY_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND))
         .when(categoryService).deleteCategory(CATEGORY_ID);
 
@@ -180,7 +180,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void deleteCategoryDataIntegrityViolation_throwAppError() throws Exception {
+    void deleteCategoryDataIntegrityViolation_throwAppError() throws Exception {
         doThrow(new AppException("Cannot delete category. It is linked to existing rooms.", HttpStatus.BAD_REQUEST))
         .when(categoryService).deleteCategory(CATEGORY_ID);
 
@@ -196,7 +196,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void deleteCategory_throwException() throws Exception {
+    void deleteCategory_throwException() throws Exception {
         doThrow(HttpServerErrorException.InternalServerError.class)
         .when(categoryService).deleteCategory(CATEGORY_ID);
 
