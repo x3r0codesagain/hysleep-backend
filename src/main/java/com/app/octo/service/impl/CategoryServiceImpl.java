@@ -43,7 +43,7 @@ public class CategoryServiceImpl implements CategoryService{
         }
         Category categoryExists = categoryRepository.findByCategoryName(categoryName);
         if (Objects.nonNull(categoryExists)) {
-            throw new AppException(ErrorCodes.CATEGORY_EXISTS.getMessage(), HttpStatus.NOT_FOUND);
+            throw new AppException(ErrorCodes.CATEGORY_EXISTS.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
         Category newCategory = Category.builder().categoryName(categoryName).build();
@@ -64,7 +64,7 @@ public class CategoryServiceImpl implements CategoryService{
 
         Category existingCategory = categoryRepository.findByCategoryName(request.getCategoryName());
         if (Objects.nonNull(existingCategory)) {
-            throw new AppException(ErrorCodes.CATEGORY_EXISTS.getMessage(), HttpStatus.NOT_FOUND);
+            throw new AppException(ErrorCodes.CATEGORY_EXISTS.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
         category.setCategoryName(request.getCategoryName());
