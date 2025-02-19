@@ -11,6 +11,7 @@ public enum ErrorCodes {
   INCOMPLETE_DATA("Recheck data input."),
   DATA_EXISTS("The following data has been inputted previously."),
   UNABLE_TO_CONFIRM("There is an error during confirmation please retry."),
+  BAD_REQUEST("Recheck the data given"),
   INTERNAL_SERVER_ERROR("Internal Server Error"),
   DATA_NOT_FOUND("No data available"),
   ROOM_NOT_FOUND("Room is not available or does not exists"),
