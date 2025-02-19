@@ -6,7 +6,6 @@ import com.app.octo.model.request.GetAllByStatusRequest;
 import com.app.octo.model.response.BookingResponse;
 import com.app.octo.model.response.ListResponse;
 import com.app.octo.service.BookingService;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/booking")
-@SecurityRequirement(name = "BearerAuth")
 public class BookingController {
 
   private final BookingService bookingService;
