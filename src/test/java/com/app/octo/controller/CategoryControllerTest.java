@@ -241,7 +241,7 @@ public class CategoryControllerTest {
         categoryGetResponse.setData(new ArrayList<>());    
     }
     @AfterEach
-    private void tearDown() {
+    public void tearDown() {
         verifyNoMoreInteractions(categoryService);
     }
 }
