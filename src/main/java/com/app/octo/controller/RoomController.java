@@ -22,7 +22,7 @@ public class RoomController {
     }
 
     @PostMapping("/public/getAll")
-    public ResponseEntity<?> getAllRooms() {
+    public ResponseEntity<Object> getAllRooms() {
         try {
             List<RoomResponseDTO> rooms = roomService.getAllRooms();
             return ResponseEntity.ok(rooms);
@@ -32,9 +32,9 @@ public class RoomController {
     }
 
     @PostMapping("/public/getById")
-    public ResponseEntity<?> getRoomById(@Valid @RequestBody RoomIdRequestDTO roomIdRequest) {
+    public ResponseEntity<Object> getRoomById(@Valid @RequestBody RoomIdRequestDTO roomIdRequest) {
         try {
-            long roomId = roomIdRequest.getId();
+            long roomId = roomIdRequest.getRoomId();
             if (!roomService.existsById(roomId)) {
                 return ResponseEntity.notFound().build();
             }
@@ -46,7 +46,7 @@ public class RoomController {
     }
 
     @PostMapping("/public/createRoom")
-    public ResponseEntity<?> createRoom(@Valid @RequestBody RoomRequestDTO roomRequest) {
+    public ResponseEntity<Object> createRoom(@Valid @RequestBody RoomRequestDTO roomRequest) {
         try {
             RoomResponseDTO createdRoom = roomService.createRoom(roomRequest);
             return ResponseEntity.ok(createdRoom);
@@ -56,7 +56,7 @@ public class RoomController {
     }
 
     @PostMapping("/public/updateStatus")
-    public ResponseEntity<?> updateStatus(@Valid @RequestBody RoomUpdateStatusRequestDTO roomUpdateStatus) {
+    public ResponseEntity<Object> updateStatus(@Valid @RequestBody RoomUpdateStatusRequestDTO roomUpdateStatus) {
         try {
             Long roomId = roomUpdateStatus.getRoomId();
             if (!roomService.existsById(roomId)) {
@@ -70,13 +70,12 @@ public class RoomController {
     }
 
     @PostMapping("/public/delete")
-    public ResponseEntity<?> deleteRoom(@Valid @RequestBody RoomIdRequestDTO roomIdRequest) {
+    public ResponseEntity<Object> deleteRoom(@Valid @RequestBody RoomIdRequestDTO roomIdRequest) {
         try {
-            Long roomId = roomIdRequest.getId();
+            Long roomId = roomIdRequest.getRoomId();
             if (!roomService.existsById(roomId)) {
                 return ResponseEntity.notFound().build();
             }
-            // Memanggil service dengan DTO delete
             roomService.deleteRoom(roomIdRequest);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {

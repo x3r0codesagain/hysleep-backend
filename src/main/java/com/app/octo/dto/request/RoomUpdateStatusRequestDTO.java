@@ -3,9 +3,11 @@ package com.app.octo.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class RoomUpdateStatusRequestDTO {
     @NotNull(message = "Room ID required")
     private long roomId;

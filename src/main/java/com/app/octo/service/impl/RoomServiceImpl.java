@@ -11,12 +11,12 @@ import com.app.octo.model.exception.AppException;
 import com.app.octo.repository.CategoryRepository;
 import com.app.octo.repository.RoomRepository;
 import com.app.octo.service.RoomService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.Optional;
 
 @Service
@@ -24,6 +24,8 @@ public class RoomServiceImpl implements RoomService {
 
     private final RoomRepository roomRepository;
     private final CategoryRepository categoryRepository;
+
+    private static final String ROOM_NOT_FOUND_MESSAGE = "Room not found with id: ";
 
     public RoomServiceImpl(RoomRepository roomRepository, CategoryRepository categoryRepository) {
         this.roomRepository = roomRepository;
@@ -33,17 +35,16 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public List<RoomResponseDTO> getAllRooms() {
         List<Room> rooms = roomRepository.findAll();
-        return rooms.stream().map(this::mapToResponse).collect(Collectors.toList());
+        return rooms.stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
     @Override
     public RoomResponseDTO getRoomById(RoomIdRequestDTO roomIdRequest) {
-        Long roomId = roomIdRequest.getId();
-        if (roomId == null || !roomRepository.existsById(roomId)) {  // Periksa null
-            throw new RuntimeException("Room not found with id: " + roomId);
-        }
+        Long roomId = roomIdRequest.getRoomId();
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new RuntimeException("Room not found with id: " + roomId));
+                .orElseThrow(() -> new RuntimeException(ROOM_NOT_FOUND_MESSAGE + roomId));
         return mapToResponse(room);
     }
 
@@ -70,18 +71,11 @@ public class RoomServiceImpl implements RoomService {
     public RoomResponseDTO updateStatus(RoomUpdateStatusRequestDTO roomUpdateStatus) {
         long roomId = roomUpdateStatus.getRoomId();
 
-        // Periksa apakah room dengan ID tersebut ada
         if (!roomRepository.existsById(roomId)) {
             throw new EntityNotFoundException("Room with ID " + roomId + " not found.");
         }
 
-        // Ambil room dari database setelah memastikan bahwa room ada
         Optional<Room> room = roomRepository.findById(roomId);
-
-        System.out.println("Room ID: " + roomId);
-        System.out.println("====================");
-        System.out.println(room);
-        System.out.println("====================");
 
         if (room.isPresent()) {
             Room roomToUpdate = room.get();
@@ -89,16 +83,15 @@ public class RoomServiceImpl implements RoomService {
             Room updatedRoom = roomRepository.save(roomToUpdate);
             return mapToResponse(updatedRoom);
         } else {
-            // Walaupun ini sebenarnya tidak perlu karena sebelumnya sudah diperiksa dengan existsById
             throw new EntityNotFoundException("Room with ID " + roomId + " not found.");
         }
     }
 
     @Override
     public void deleteRoom(RoomIdRequestDTO roomIdRequest) {
-        long roomId = roomIdRequest.getId();
+        long roomId = roomIdRequest.getRoomId();
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new RuntimeException("Room not found with id: " + roomId));
+                .orElseThrow(() -> new RuntimeException(ROOM_NOT_FOUND_MESSAGE + roomId));
         roomRepository.delete(room);
     }
 
