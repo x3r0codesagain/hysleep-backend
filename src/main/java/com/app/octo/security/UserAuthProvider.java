@@ -58,9 +58,9 @@ public class UserAuthProvider {
     UserResponse user = userService.findByEmail(decodedJWT.getIssuer());
     String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
     Collection<SimpleGrantedAuthority> authorityCollections = new ArrayList<>();
-    Arrays.stream(roles).forEach(role -> {
-      authorityCollections.add(new SimpleGrantedAuthority(role));
-    });
+    Arrays.stream(roles).forEach(role ->
+      authorityCollections.add(new SimpleGrantedAuthority(role))
+    );
 
     return new UsernamePasswordAuthenticationToken(user, null, authorityCollections);
   }

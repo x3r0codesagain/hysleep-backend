@@ -2,6 +2,8 @@ package com.app.octo.controller;
 
 import java.util.List;
 
+import com.app.octo.model.enums.ErrorCodes;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,10 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.app.octo.dto.response.RoomResponseDTO;
+import com.app.octo.model.exception.AppException;
 import com.app.octo.model.response.ApiResponse;
 import com.app.octo.model.response.CategoryGetResponse;
 import com.app.octo.model.response.CategoryResponse;
@@ -21,48 +21,78 @@ import com.app.octo.model.request.CategoryRequest;
 import com.app.octo.model.request.CategoryUpdateRequest;
 import com.app.octo.service.CategoryService;
 
+import jakarta.validation.Valid;
+
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("api/v1/category")
 public class CategoryController {
-    
-    @Autowired
-    private CategoryService categoryService;
+
+    private final CategoryService categoryService;
     
     @GetMapping("/public/get-all")
-    public ResponseEntity<?> getAllCategories(){
+    public ResponseEntity<ApiResponse<List<CategoryGetResponse>>> getAllCategories(){
         try {
             ApiResponse<List<CategoryGetResponse>> category = categoryService.getAllCategories();
             return ResponseEntity.ok(category);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error fetching categories: " + e.getMessage());
+            ApiResponse<List<CategoryGetResponse>> errorResponse = new ApiResponse<>();
+            errorResponse.setErrorCode(ErrorCodes.INTERNAL_SERVER_ERROR.getMessage());
+            errorResponse.setErrorMessage("Error fetching categories: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(errorResponse);
+
         }
     }
     @PostMapping("/public/create-category")
-    public ResponseEntity<?> createCategory(@RequestBody CategoryRequest request){
+    public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest request){
         try {
             CategoryResponse newCategory = categoryService.createCategory(request.getCategoryName());
             return ResponseEntity.status(HttpStatus.CREATED).body(newCategory);
+        } catch (AppException e) {
+            CategoryResponse response = new CategoryResponse();
+            response.setErrorCode(e.getCode().name());
+            response.setErrorMessage(e.getMessage());
+            return new ResponseEntity<>(response, e.getCode());
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error creating category: " + e.getMessage());
-        } 
+            CategoryResponse errorResponse = new CategoryResponse();
+            errorResponse.setErrorCode(ErrorCodes.INTERNAL_SERVER_ERROR.getMessage());
+            errorResponse.setErrorMessage("Error creating category: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(errorResponse);
+        }
     }
     @PostMapping("/public/update-name")
-    public ResponseEntity<?> updateCategoryName(@RequestBody CategoryUpdateRequest request){
+    public ResponseEntity<CategoryResponse> updateCategoryName(@Valid @RequestBody CategoryUpdateRequest request){
         try {
-            CategoryResponse newCategory = categoryService.updateCategoryName(request);
-            return ResponseEntity.ok(newCategory);
+            CategoryResponse updateCategory = categoryService.updateCategoryName(request);
+            return ResponseEntity.ok(updateCategory);
+        } catch (AppException e) {
+            CategoryResponse response = new CategoryResponse();
+            response.setErrorCode(e.getCode().name());
+            response.setErrorMessage(e.getMessage());
+            return new ResponseEntity<>(response, e.getCode());
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error updating category: " + e.getMessage());
+            CategoryResponse response = new CategoryResponse();
+            response.setErrorCode("INTERNAL_SERVER_ERROR");
+            response.setErrorMessage("Error updating category: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(response);
         } 
     }
 
     @PostMapping("/public/delete-category")
-    public ResponseEntity<?> deleteCategory(@RequestParam long categoryId){
+    public ResponseEntity<CategoryResponse> deleteCategory(@RequestParam long categoryId){
         try{
             categoryService.deleteCategory(categoryId);
             return ResponseEntity.noContent().build();
+        } catch (AppException e) {
+            CategoryResponse response = new CategoryResponse();
+            response.setErrorCode(e.getCode().name());
+            response.setErrorMessage(e.getMessage());
+            return new ResponseEntity<>(response, e.getCode());
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error deleting category: " + e.getMessage());
+            CategoryResponse response = new CategoryResponse();
+            response.setErrorCode("INTERNAL_SERVER_ERROR");
+            response.setErrorMessage("Error deleting category: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(response);
         } 
 
     }

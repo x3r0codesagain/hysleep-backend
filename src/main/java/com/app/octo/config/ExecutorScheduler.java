@@ -1,6 +1,7 @@
 package com.app.octo.config;
 
 import com.app.octo.model.response.BookingResponse;
+import com.app.octo.model.response.ListResponse;
 import com.app.octo.service.BookingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class ExecutorScheduler {
   @Scheduled(fixedRate = 3600000)
   public void autoUpdateBooking() {
     try {
-      List<BookingResponse> result = bookingService.changeStatusAfterTime();
+      ListResponse<BookingResponse> result = bookingService.changeStatusAfterTime();
       log.info("Result:  " + result);
     } catch (Exception e) {
       log.error("unable to update");

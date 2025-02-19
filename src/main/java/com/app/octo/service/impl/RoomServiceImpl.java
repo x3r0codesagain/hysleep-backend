@@ -11,8 +11,6 @@ import com.app.octo.model.exception.AppException;
 import com.app.octo.repository.CategoryRepository;
 import com.app.octo.repository.RoomRepository;
 import com.app.octo.service.RoomService;
-
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 

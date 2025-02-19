@@ -7,13 +7,14 @@ import com.app.octo.model.enums.ErrorCodes;
 import com.app.octo.model.exception.AppException;
 import com.app.octo.model.request.BookingRequest;
 import com.app.octo.model.response.BookingResponse;
+import com.app.octo.model.response.ListResponse;
 import com.app.octo.repository.BookingRepository;
 import com.app.octo.repository.RoomRepository;
 import com.app.octo.repository.UserRepository;
 import com.app.octo.service.BookingService;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.time.DateUtils;
 import org.dozer.Mapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -23,19 +24,16 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
 
-  @Autowired
-  private RoomRepository roomRepository;
+  private final RoomRepository roomRepository;
 
-  @Autowired
-  private UserRepository userRepository;
+  private final UserRepository userRepository;
 
-  @Autowired
-  private BookingRepository bookingRepository;
+  private final BookingRepository bookingRepository;
 
-  @Autowired
-  private Mapper mapper;
+  private final Mapper mapper;
 
   @Override
   public BookingResponse bookRoom(BookingRequest request) {
@@ -74,16 +72,14 @@ public class BookingServiceImpl implements BookingService {
 
   @Override
   public BookingResponse cancelBooking(Long id) {
-    BookingResponse response = processBookingCancelOrDone(id, "CANCELLED");
 
-    return response;
+    return processBookingCancelOrDone(id, "CANCELLED");
   }
 
   @Override
   public BookingResponse doneBooking(Long id) {
-    BookingResponse response = processBookingCancelOrDone(id, "DONE");
 
-    return response;
+    return processBookingCancelOrDone(id, "DONE");
   }
 
   private BookingResponse processBookingCancelOrDone(Long id, String status) {
@@ -108,12 +104,11 @@ public class BookingServiceImpl implements BookingService {
     bookingRepository.save(booking);
     roomRepository.save(room);
 
-    BookingResponse response = mapper.map(booking, BookingResponse.class);
-    return response;
+    return mapper.map(booking, BookingResponse.class);
   }
 
   @Override
-  public List<BookingResponse> changeStatusAfterTime() {
+  public ListResponse<BookingResponse> changeStatusAfterTime() {
     List<Booking> bookings = bookingRepository.findAllByStatus("ONGOING");
     List<BookingResponse> responses = new ArrayList<>();
     Date now = new Date();
@@ -123,6 +118,9 @@ public class BookingServiceImpl implements BookingService {
       }
     });
 
-    return responses;
+    ListResponse<BookingResponse> response = new ListResponse<>();
+    response.setVal(responses);
+
+    return response;
   }
 }

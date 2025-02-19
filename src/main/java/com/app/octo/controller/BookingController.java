@@ -3,8 +3,9 @@ package com.app.octo.controller;
 import com.app.octo.model.exception.AppException;
 import com.app.octo.model.request.BookingRequest;
 import com.app.octo.model.response.BookingResponse;
+import com.app.octo.model.response.ListResponse;
 import com.app.octo.service.BookingService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,16 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("api/v1/booking")
 public class BookingController {
 
-  @Autowired
-  private BookingService bookingService;
+  private final BookingService bookingService;
 
   @PostMapping("/public/book")
   public ResponseEntity<BookingResponse> bookRoom(@RequestBody BookingRequest bookingRequest) {
@@ -82,21 +79,21 @@ public class BookingController {
   }
 
   @PostMapping("/public/change")
-  public ResponseEntity<List<BookingResponse>> doneBookingAfter() {
+  public ResponseEntity<ListResponse<BookingResponse>> doneBookingAfter() {
     try {
-      List<BookingResponse> response = bookingService.changeStatusAfterTime();
+      ListResponse<BookingResponse> response = bookingService.changeStatusAfterTime();
 
       return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (AppException e) {
-      BookingResponse response = new BookingResponse();
+      ListResponse<BookingResponse> response = new ListResponse<>();
       response.setErrorCode(e.getCode().name());
       response.setErrorMessage(e.getMessage());
-      return new ResponseEntity<>(new ArrayList<>(Arrays.asList(response)), e.getCode());
+      return new ResponseEntity<>(response, e.getCode());
     } catch (Exception e) {
-      BookingResponse response = new BookingResponse();
+      ListResponse<BookingResponse> response = new ListResponse<>();
       response.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.name());
       response.setErrorMessage(e.getMessage());
-      return new ResponseEntity<>(new ArrayList<>(Arrays.asList(response)), HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
