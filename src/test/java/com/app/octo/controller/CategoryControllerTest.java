@@ -3,11 +3,13 @@ package com.app.octo.controller;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
@@ -57,7 +59,31 @@ public class CategoryControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    public void createCategory_success() throws Exception {
+    void getAllCategories() throws Exception {
+        when(categoryService.getAllCategories()).thenReturn(categoryGetResponse);
+
+        mockMvc.perform(get("/api/v1/category/public/get-all")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray());
+
+        verify(categoryService).getAllCategories();
+    }
+
+    @Test
+    void getAllCategories_throwException() throws Exception {
+        when(categoryService.getAllCategories()).
+        thenThrow(HttpServerErrorException.InternalServerError.class);
+
+        mockMvc.perform(get("/api/v1/category/public/get-all")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.errorCode", equalTo(HttpStatus.INTERNAL_SERVER_ERROR.name())));
+
+        verify(categoryService).getAllCategories();
+    }
+    @Test
+    void createCategory_success() throws Exception {
         when(categoryService.createCategory(categoryRequest.getCategoryName())).thenReturn(categoryResponse);
 
 
@@ -71,7 +97,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void createCategoryExist_throwAppError() throws Exception {
+    void createCategoryExist_throwAppError() throws Exception {
         when(categoryService.createCategory(categoryRequest.getCategoryName()))
         .thenThrow(new AppException(ErrorCodes.CATEGORY_EXISTS.getMessage(), HttpStatus.NOT_FOUND));
 
@@ -88,7 +114,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void createCategory_throwException() throws Exception {
+    void createCategory_throwException() throws Exception {
         when(categoryService.createCategory(categoryRequest.getCategoryName()))
         .thenThrow(HttpServerErrorException.InternalServerError.class);
 
@@ -104,7 +130,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void updateCategoryName_success() throws Exception {
+    void updateCategoryName_success() throws Exception {
         when(categoryService.updateCategoryName(categoryUpdateRequest)).thenReturn(categoryResponse);
 
 
@@ -118,7 +144,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void updateCategoryName_throwAppError() throws Exception {
+    void updateCategoryName_throwAppError() throws Exception {
         when(categoryService.updateCategoryName(categoryUpdateRequest))
         .thenThrow(new AppException(ErrorCodes.CATEGORY_EXISTS.getMessage(), HttpStatus.NOT_FOUND));
 
@@ -135,7 +161,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void updateCategoryName_throwException() throws Exception {
+    void updateCategoryName_throwException() throws Exception {
         when(categoryService.updateCategoryName(categoryUpdateRequest))
         .thenThrow(HttpServerErrorException.InternalServerError.class);
 
@@ -151,7 +177,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void deleteCategory_success() throws Exception {
+    void deleteCategory_success() throws Exception {
         doNothing().when(categoryService).deleteCategory(CATEGORY_ID);
 
         this.mockMvc.perform(post("/api/v1/category/public/delete-category")
@@ -164,7 +190,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void deleteCategoryNotFound_throwAppError() throws Exception {
+    void deleteCategoryNotFound_throwAppError() throws Exception {
         doThrow(new AppException(ErrorCodes.CATEGORY_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND))
         .when(categoryService).deleteCategory(CATEGORY_ID);
 
@@ -180,7 +206,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void deleteCategoryDataIntegrityViolation_throwAppError() throws Exception {
+    void deleteCategoryDataIntegrityViolation_throwAppError() throws Exception {
         doThrow(new AppException("Cannot delete category. It is linked to existing rooms.", HttpStatus.BAD_REQUEST))
         .when(categoryService).deleteCategory(CATEGORY_ID);
 
@@ -196,7 +222,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void deleteCategory_throwException() throws Exception {
+    void deleteCategory_throwException() throws Exception {
         doThrow(HttpServerErrorException.InternalServerError.class)
         .when(categoryService).deleteCategory(CATEGORY_ID);
 
@@ -236,9 +262,12 @@ public class CategoryControllerTest {
                     .categoryId(CATEGORY_ID)
                     .categoryName(CATEGORY_NAME)
                     .build();
-
-        ApiResponse<List<CategoryGetResponse>> categoryGetResponse = new ApiResponse<>();
-        categoryGetResponse.setData(new ArrayList<>());    
+        List<CategoryGetResponse> categories = List.of(
+            new CategoryGetResponse(1, "Category A"),
+            new CategoryGetResponse(2, "Category B")
+        );
+        categoryGetResponse = new ApiResponse<>();
+        categoryGetResponse.setData(categories);   
     }
     @AfterEach
     private void tearDown() {
