@@ -100,6 +100,11 @@ public class RoomServiceImpl implements RoomService {
         return roomRepository.existsById(roomId);
     }
 
+    @Override
+    public boolean existsByRoomNumber(String roomNumber) {
+        return roomRepository.existsByRoomNumber(roomNumber);
+    }
+
     private RoomResponseDTO mapToResponse(Room room) {
         return new RoomResponseDTO(
                 room.getRoomId(),
