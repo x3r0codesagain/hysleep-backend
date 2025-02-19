@@ -6,6 +6,7 @@ import com.app.octo.model.User;
 import com.app.octo.model.enums.ErrorCodes;
 import com.app.octo.model.exception.AppException;
 import com.app.octo.model.request.BookingRequest;
+import com.app.octo.model.request.GetAllByStatusRequest;
 import com.app.octo.model.response.BookingResponse;
 import com.app.octo.model.response.ListResponse;
 import com.app.octo.repository.BookingRepository;
@@ -22,11 +23,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
 
+  public static final String ONGOING = "ONGOING";
   private final RoomRepository roomRepository;
 
   private final UserRepository userRepository;
@@ -58,7 +61,7 @@ public class BookingServiceImpl implements BookingService {
     Date end = DateUtils.addHours(now, request.getDuration());
 
     Booking booking = Booking.builder()
-        .status("ONGOING")
+        .status(ONGOING)
         .user(user)
         .bookingDate(now)
         .startDate(now)
@@ -109,7 +112,7 @@ public class BookingServiceImpl implements BookingService {
 
   @Override
   public ListResponse<BookingResponse> changeStatusAfterTime() {
-    List<Booking> bookings = bookingRepository.findAllByStatus("ONGOING");
+    List<Booking> bookings = bookingRepository.findAllByStatus(ONGOING);
     List<BookingResponse> responses = new ArrayList<>();
     Date now = new Date();
     bookings.stream().forEach(booking -> {
@@ -122,5 +125,40 @@ public class BookingServiceImpl implements BookingService {
     response.setVal(responses);
 
     return response;
+  }
+
+  @Override
+  public ListResponse<BookingResponse> getAllByStatus(GetAllByStatusRequest request) {
+
+    if (!ONGOING.equals(request.getStatus()) && !"DONE".equals(request.getStatus())
+        && !"CANCELLED".equals(request.getStatus())) {
+      throw new AppException(ErrorCodes.BAD_REQUEST.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    User user = userRepository.findByEmail(request.getEmail()).orElseGet(() -> null);
+
+    if (Objects.isNull(user)) {
+      throw new AppException(ErrorCodes.USER_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    List<Booking> bookings = bookingRepository.findByUser_idAndStatus(user.getId(),
+        request.getStatus());
+
+    List<BookingResponse> responses =
+        bookings.stream().map(booking -> mapper.map(booking, BookingResponse.class))
+            .collect(Collectors.toList());
+
+    return new ListResponse<>(responses);
+  }
+
+  @Override
+  public ListResponse<BookingResponse> getAll() {
+
+    List<Booking> bookings = bookingRepository.findAll();
+    List<BookingResponse> responses =
+        bookings.stream().map(booking -> mapper.map(booking, BookingResponse.class))
+            .collect(Collectors.toList());
+
+    return new ListResponse<>(responses);
   }
 }
