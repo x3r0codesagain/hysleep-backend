@@ -51,6 +51,10 @@ public class RoomController {
     @PostMapping("/public/createRoom")
     public ResponseEntity<Object> createRoom(@Valid @RequestBody RoomRequestDTO roomRequest) {
         try {
+            if (roomService.existsByRoomNumber(roomRequest.getRoomNumber())) {
+                return ResponseEntity.badRequest()
+                        .body("Room number already existing!!!!!!!!!!");
+            }
             RoomResponseDTO createdRoom = roomService.createRoom(roomRequest);
             return ResponseEntity.ok(createdRoom);
         } catch (Exception e) {

@@ -14,4 +14,6 @@ public interface RoomService {
     RoomResponseDTO updateStatus(RoomUpdateStatusRequestDTO roomUpdateStatus);
     void deleteRoom(RoomIdRequestDTO roomIdRequest);
     boolean existsById(long roomId);
+    boolean existsByRoomNumber(String roomNumber);
+
 }
