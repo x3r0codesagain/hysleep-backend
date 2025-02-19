@@ -27,6 +27,7 @@ public class CategoryServiceImpl implements CategoryService{
 
     private final Mapper mapper;
 
+    @Override
     public ApiResponse<List<CategoryGetResponse>> getAllCategories(){
         List<Category> categories = categoryRepository.findAll();
         List<CategoryGetResponse> categoryResponses = categories.stream()
@@ -37,6 +38,7 @@ public class CategoryServiceImpl implements CategoryService{
         return apiResponse;
     }
 
+    @Override
     public CategoryResponse createCategory(String categoryName){
         if(categoryName.isEmpty()){
             throw new AppException("Incomplete Request", HttpStatus.BAD_REQUEST);
@@ -53,6 +55,7 @@ public class CategoryServiceImpl implements CategoryService{
         return mapper.map(newCategory, CategoryResponse.class);
     }
 
+    @Override
     public CategoryResponse updateCategoryName(CategoryUpdateRequest request){
         if(request.getCategoryId() == 0 || request.getCategoryName().isEmpty()){
             throw new AppException("Incomplete Request", HttpStatus.BAD_REQUEST);
@@ -72,6 +75,7 @@ public class CategoryServiceImpl implements CategoryService{
         return mapper.map(category, CategoryResponse.class);
     }
 
+    @Override
     public void deleteCategory(long categoryId){
         Category category = categoryRepository.findByCategoryId(categoryId);
         if (Objects.isNull(category)) {
