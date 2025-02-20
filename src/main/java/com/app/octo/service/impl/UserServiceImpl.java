@@ -26,7 +26,7 @@ import java.util.Objects;
 public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
-  private final PasswordEncoder passwordEncoder; //to avoid password saved in plain text - hashed
+  private final PasswordEncoder passwordEncoder;
   private final Mapper mapper;
 
   @Override
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
       return mapper.map(user, UserResponse.class);
     }
 
-    throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
+    throw new AppException(ErrorCodes.INVALID_PASSWORD.getMessage(), HttpStatus.BAD_REQUEST);
   }
 
   @Override
@@ -152,9 +152,11 @@ public class UserServiceImpl implements UserService {
     if (Objects.nonNull(editPasswordRequest.getPassword()) && editPasswordRequest.getPassword().length > 0) {
       if (!passwordEncoder.matches(CharBuffer.wrap(editPasswordRequest.getCurrentPassword()),
           user.getPassword())) {
-        throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
+        throw new AppException(ErrorCodes.INVALID_REQUEST.getMessage(), HttpStatus.BAD_REQUEST);
       }
       user.setPassword(passwordEncoder.encode(CharBuffer.wrap(editPasswordRequest.getPassword())));
+    } else {
+      throw new AppException(ErrorCodes.INVALID_REQUEST.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     userRepository.save(user);
@@ -176,7 +178,7 @@ public class UserServiceImpl implements UserService {
     if (Objects.nonNull(editProfileRequest.getPassword()) && editProfileRequest.getPassword().length > 0) {
       if (!passwordEncoder.matches(CharBuffer.wrap(editProfileRequest.getCurrentPassword()),
           user.getPassword())) {
-        throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
+        throw new AppException(ErrorCodes.INVALID_REQUEST.getMessage(), HttpStatus.BAD_REQUEST);
       }
       user.setPassword(passwordEncoder.encode(CharBuffer.wrap(editProfileRequest.getPassword())));
     }
