@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.app.octo.model.enums.ErrorCodes;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +19,6 @@ import com.app.octo.model.response.CategoryResponse;
 import com.app.octo.model.request.CategoryRequest;
 import com.app.octo.model.request.CategoryUpdateRequest;
 import com.app.octo.service.CategoryService;
-
-import jakarta.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor

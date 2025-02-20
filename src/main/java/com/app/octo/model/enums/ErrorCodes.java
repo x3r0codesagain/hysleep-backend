@@ -14,6 +14,7 @@ public enum ErrorCodes {
   BAD_REQUEST("Recheck the data given"),
   INTERNAL_SERVER_ERROR("Internal Server Error"),
   DATA_NOT_FOUND("No data available"),
+  INVALID_PASSWORD("Invalid password"),
   ROOM_NOT_FOUND("Room is not available or does not exists"),
   CATEGORY_NOT_FOUND("Category is not available or does not exists"),
   CATEGORY_EXISTS("Category is already exists"),
