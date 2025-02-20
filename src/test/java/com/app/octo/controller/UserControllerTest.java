@@ -6,6 +6,7 @@ import com.app.octo.model.enums.UserRole;
 import com.app.octo.model.exception.AppException;
 import com.app.octo.model.request.EditPasswordRequest;
 import com.app.octo.model.request.EditProfileRequest;
+import com.app.octo.model.request.GetUserRequest;
 import com.app.octo.model.request.LoginRequest;
 import com.app.octo.model.request.RegisterRequest;
 import com.app.octo.model.response.UserResponse;
@@ -61,6 +62,7 @@ public class UserControllerTest {
   private EditProfileRequest editProfileRequest;
   private MockMvc mockMvc;
   private EditPasswordRequest editPasswordRequest;
+  private GetUserRequest getUserRequest;
 
   @Test
   void login_success() throws Exception {
@@ -353,6 +355,46 @@ public class UserControllerTest {
     verify(userService).editPassword(editPasswordRequest);
   }
 
+  @Test
+  void findUser_success() throws Exception {
+    when(userService.findByEmail(EMAIL)).thenReturn(userResponse);
+
+    this.mockMvc.perform(post("/api/v1/users/public/find")
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(getUserRequest)))
+        .andExpect(status().isOk());
+
+    verify(userService).findByEmail(EMAIL);
+  }
+
+  @Test
+  void findUserNotFound_throwAppException() throws Exception {
+    when(userService.findByEmail(EMAIL))
+        .thenThrow(new AppException(ErrorCodes.USER_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND));
+
+    this.mockMvc.perform(post("/api/v1/users/public/find")
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(getUserRequest)))
+        .andExpect(status().isNotFound()).andExpect(jsonPath("$.errorMessage", equalTo(ErrorCodes.USER_NOT_FOUND.getMessage())));
+
+    verify(userService).findByEmail(EMAIL);
+  }
+
+  @Test
+  void findUser_throwException() throws Exception {
+    when(userService.findByEmail(EMAIL))
+        .thenThrow(HttpServerErrorException.InternalServerError.class);
+
+    this.mockMvc.perform(post("/api/v1/users/public/find")
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(getUserRequest)))
+        .andExpect(status().isInternalServerError()).andExpect(jsonPath("$.errorCode", equalTo(HttpStatus.INTERNAL_SERVER_ERROR.name())));
+
+    verify(userService).findByEmail(EMAIL);
+  }
   @BeforeEach
   public void init() {
     initMocks(this);
@@ -413,6 +455,10 @@ public class UserControllerTest {
         .currentEmail(CURRENT_EMAIL)
         .currentPassword(CURRENT_PASSWORD.toCharArray())
         .password(PASSWORD.toCharArray())
+        .build();
+
+    getUserRequest = GetUserRequest.builder()
+        .email(EMAIL)
         .build();
   }
 
