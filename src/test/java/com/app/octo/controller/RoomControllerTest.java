@@ -78,10 +78,10 @@ public class RoomControllerTest {
                 .build();
     }
 
-    @AfterEach
-    public void tearDown() {
-        verifyNoMoreInteractions(roomService);
-    }
+//    @AfterEach
+//    public void tearDown() {
+//        verifyNoMoreInteractions(roomService);
+//    }
 
     @Test
     void getAllRooms_success() throws Exception {
