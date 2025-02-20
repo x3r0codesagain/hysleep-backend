@@ -155,6 +155,8 @@ public class UserServiceImpl implements UserService {
         throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
       }
       user.setPassword(passwordEncoder.encode(CharBuffer.wrap(editPasswordRequest.getPassword())));
+    } else {
+      throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
     }
 
     userRepository.save(user);
